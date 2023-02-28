@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  apple:
+  - apiVersion: v2
+    appVersion: 0.2.3
+    created: "2023-02-27T23:16:22.425694-08:00"
+    description: A Helm chart for Kubernetes
+    digest: 791dcc57104c0c5c0af6a1a490e6cd4e36cf3d2447294a930165f8e4404c5c61
+    name: apple
+    type: application
+    urls:
+    - https://opencontextinc.github.io/opencontext-helm/apple-0.3.3.tgz
+    version: 0.3.3
+generated: "2023-02-27T23:16:22.425067-08:00"

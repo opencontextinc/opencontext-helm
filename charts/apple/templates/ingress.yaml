@@ -1,0 +1,40 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "apple-svc.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "apple-svc.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: {{ .Values.ingress.albManageTraffic.scheme }}
+    {{ if .Values.ingress.albManageTraffic.prevService.version -}}
+    alb.ingress.kubernetes.io/actions.forward-multiple-tg: >
+      {"Type":"forward","ForwardConfig":{"TargetGroups":[{"ServiceName":"{{ .Values.ingress.albManageTraffic.prevService.name }}","ServicePort":"{{ $svcPort }}","Weight":{{ .Values.ingress.albManageTraffic.prevService.weight}}},{"ServiceName":"{{ include "apple-svc.name" . }}","ServicePort":"{{ $svcPort }}","Weight":{{ .Values.ingress.albManageTraffic.currService.weight}}}],"TargetGroupStickinessConfig":{"Enabled":false,"DurationSeconds":5}}}
+    {{- else -}}
+    alb.ingress.kubernetes.io/actions.forward-multiple-tg: >
+      {"Type":"forward","ForwardConfig":{"TargetGroups":[{"ServiceName":"{{ include "apple-svc.name" . }}","ServicePort":"{{ $svcPort }}","Weight":100}],"TargetGroupStickinessConfig":{"Enabled":false,"DurationSeconds":5}}}
+    {{- end }}
+spec:
+  rules:
+    - http:
+        paths:
+          - path: {{ .Values.ingress.albManageTraffic.path }}
+            backend:
+              serviceName: forward-multiple-tg
+              servicePort: use-annotation
+{{- end }}
