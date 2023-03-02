@@ -144,7 +144,7 @@ app:
         enabled: true
         # If true, the server certificate is verified against the list of supplied CAs. 
         # An error event is emitted if verification fails
-        rejectUnauthorized: false
+        rejectUnauthorized: true
       pool:
         min: 0
         max: 20
@@ -157,10 +157,10 @@ app:
       appAuthSecret: opencontext-github-app-auth
       createAppAuthFromFile:
   pagerDuty:
-    enabled: true
+    enabled: false
     token:
   googleCloudStorage:
-    enabled: true
+    enabled: false
     useServiceAccount: false
     serviceAccountSecret: opencontext-google-cloud-storage
     createServiceAccountFromFile:
