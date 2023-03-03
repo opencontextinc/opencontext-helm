@@ -1,0 +1,57 @@
+{{- if (and (.Capabilities.APIVersions.Has "cert-manager.io/v1") .Values.issuer.email )  -}}
+{{/*  Only install issuer if it doesn't already exist in the cluster */}}
+{{- if not ( lookup "cert-manager.io/v1" "ClusterIssuer"  "" .Values.issuer.clusterIssuer  ) -}}
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ .Values.issuer.clusterIssuer }}
+  labels:
+    {{- include "opencontext.labels" . | nindent 4 }}
+spec:
+{{- if eq .Values.issuer.clusterIssuer "selfsigned-issuer" }}
+  selfSigned: {}
+{{- else }}
+  acme:
+    {{- if contains "prod" .Values.issuer.clusterIssuer }}
+    server: https://acme-v02.api.letsencrypt.org/directory
+    {{- else }}
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    {{- end }}
+    email: {{ required "expected a valid .Values.issuer.email to enable ClusterIssuer" .Values.issuer.email }}
+    privateKeySecretRef:
+      name: {{ required "expected .Values.issuer.cluster-issuer to not be empty (letsencrypt-prod | letsencrypt-staging)" .Values.issuer.clusterIssuer }}
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+{{- end }}
+{{- end -}}
+{{- else if (and (.Capabilities.APIVersions.Has "cert-manager.io/v1beta1") .Values.issuer.email ) -}}
+{{/*  Only install issuer if it doesn't already exist in the cluster */}}
+{{- if not ( lookup "cert-manager.io/v1beta1" "ClusterIssuer"  "" .Values.issuer.clusterIssuer  ) -}}
+apiVersion: cert-manager.io/v1beta1
+kind: ClusterIssuer
+metadata:
+  name: {{ .Values.issuer.clusterIssuer }}
+  labels:
+    {{- include "opencontext.labels" . | nindent 4 }}
+spec:
+{{- if eq .Values.issuer.clusterIssuer "selfsigned-issuer" }}
+  selfSigned: {}
+{{- else }}
+  acme:
+    {{- if contains "prod" .Values.issuer.clusterIssuer }} 
+    server: https://acme-v02.api.letsencrypt.org/directory
+    {{- else }}
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    {{- end }}
+    email: {{ required "expected a valid .Values.issuer.email to enable ClusterIssuer" .Values.issuer.email }}
+    privateKeySecretRef:
+      name: {{ required "expected .Values.issuer.cluster-issuer to not be empty (letsencrypt-prod | letsencrypt-staging)" .Values.issuer.clusterIssuer }}
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+{{- end }}
+{{- end -}}
+{{- end -}}

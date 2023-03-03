@@ -1,0 +1,150 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "opencontext.fullname" . }}
+  labels:
+    {{- include "opencontext.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "opencontext.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "opencontext.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "opencontext.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ORG_NAME
+              value: {{ required ".Values.app.orgNam" .Values.app.orgName | quote }}
+            - name: APP_URL
+              value: {{ required ".Values.app.url" .Values.app.url | quote }}
+            - name: PGHOST
+              value: {{ include "postgresql.host" . | quote }}
+            - name: PGPORT
+              value: {{ include "postgresql.port" . | quote }}
+            - name: PGUSER
+              value: {{ include "postgresql.user" . | quote }}
+            - name: PG_PREFIX
+              value: {{ required ".Values.app.database.prefix is required" .Values.app.database.prefix | quote }}
+            {{- if and .Values.app.googleCloudStorage.enabled .Values.app.googleCloudStorage.useServiceAccount }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /app/configs/gcp/gcp-sa-credentials.json
+            {{- end }}
+          volumeMounts:
+            - mountPath: /app/configs/base/app-config.yaml
+              name: opencontext-config
+              subPath: app-config.yaml
+            - mountPath: /app/configs/locations/app-config-locations.yaml
+              name: opencontext-locations
+              subPath: app-config-locations.yaml
+            - mountPath: /app/configs/db-pool/db-pool.yaml
+              name: opencontext-app-db-pool
+              subPath: db-pool.yaml
+            - mountPath: /app/configs/secrets
+              name: opencontext-secrets
+              readOnly: true
+            - mountPath: /app/configs/db-secrets
+              name: opencontext-pg-secrets
+              readOnly: true
+            {{- if .Values.postgresql.tls.enabled }}
+            - mountPath: /app/configs/db-ca/ca.crt
+              name: opencontext-pg-ca
+              subPath: ca.crt
+            - mountPath: /app/configs/db-certs
+              name: opencontext-pg-certs
+              readOnly: true
+            {{- end }}
+            {{- if and .Values.app.googleCloudStorage.enabled .Values.app.googleCloudStorage.useServiceAccount }}
+            - mountPath: /app/configs/gcp
+              name: opencontext-gcp-sa-secret
+              readOnly: true
+            {{- end }}
+            {{- if ne .Values.app.github.authType "token" }}
+            - mountPath: /app/configs/github
+              name: opencontext-github-app-secret
+              readOnly: true
+            {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          startupProbe:
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - configMap:
+            items:
+              - key: app-config.yaml
+                path: app-config.yaml
+            name: {{ include "opencontext.fullname" . }}-config
+          name: opencontext-config
+        - configMap:
+            items:
+              - key: app-config-locations.yaml
+                path: app-config-locations.yaml
+            name: {{ include "opencontext.fullname" . }}-locations
+          name: opencontext-locations
+        - configMap:
+            items:
+              - key: db-pool.yaml
+                path: db-pool.yaml
+            name: {{ include "opencontext.fullname" . }}-db-pool
+          name: opencontext-app-db-pool
+        - secret:
+            secretName: {{ include "opencontext.fullname" . }}-auth
+          name: opencontext-secrets
+        - secret:
+            secretName: {{ .Values.global.postgresql.auth.existingSecret }}
+          name: opencontext-pg-secrets
+        {{- if .Values.postgresql.tls.enabled }}
+        - configMap:
+            items:
+              - key: ca.crt
+                path: ca.crt
+            name: {{ include "opencontext.fullname" . }}-postgres-ca
+          name: opencontext-pg-ca
+        - secret:
+            secretName: {{ .Values.postgresql.tls.certificatesSecret }}
+          name: opencontext-pg-certs
+        {{- end }}
+        {{- if and .Values.app.googleCloudStorage.enabled .Values.app.googleCloudStorage.useServiceAccount }}
+        - secret:
+            secretName: {{ .Values.app.googleCloudStorage.serviceAccountSecret }}
+          name: opencontext-gcp-sa-secret
+        {{- end }}
+        {{- if ne .Values.app.github.authType "token" }}
+        - secret:
+            secretName: {{ .Values.app.github.appAuth.appAuthSecret }}
+          name: opencontext-github-app-secret
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

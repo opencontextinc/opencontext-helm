@@ -49,3 +49,4 @@ z-*.*
 
 # Chart dependencies
 **/charts/*.tgz
+**/old/*
