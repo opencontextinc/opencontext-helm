@@ -2,8 +2,30 @@ apiVersion: v1
 entries:
   opencontext:
   - apiVersion: v2
+    appVersion: v0.10.2
+    created: "2023-04-05T12:19:23.41793-07:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.9.13
+    description: A Helm chart for OpenContext
+    digest: 89dc27b998f5aefa90495637b492f6ba7c2d6a6eaf55a3c6f064ae48e28c7881
+    icon: https://docs.opencontext.com/img/logo.svg
+    maintainers:
+    - email: support@opencontext.com
+      name: OpenContext Inc.
+      url: https://opencontext.com
+    name: opencontext
+    sources:
+    - https://github.com/opencontextinc/opencontext
+    type: application
+    urls:
+    - https://helm.opencontext.com/opencontext-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: v0.10.0
-    created: "2023-03-01T14:48:26.146797-08:00"
+    created: "2023-04-05T12:19:23.413289-07:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -23,4 +45,26 @@ entries:
     urls:
     - https://helm.opencontext.com/opencontext-0.1.0.tgz
     version: 0.1.0
-generated: "2023-03-01T14:48:26.141299-08:00"
+  - apiVersion: v2
+    appVersion: v0.10.0
+    created: "2023-04-05T12:19:23.423428-07:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.9.13
+    description: A Helm chart for OpenContext
+    digest: 7b19b29e4a69ca61efb0afad6abc162d14fe4ab0a174946420cc7eb466029c3c
+    icon: https://docs.opencontext.com/img/logo.svg
+    maintainers:
+    - email: support@opencontext.com
+      name: OpenContext Inc.
+      url: https://opencontext.com
+    name: opencontext
+    sources:
+    - https://github.com/opencontextinc/opencontext
+    type: application
+    urls:
+    - https://helm.opencontext.com/z-untar/opencontext-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-04-05T12:19:23.407343-07:00"
