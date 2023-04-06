@@ -144,7 +144,7 @@ app:
         enabled: true
         # If true, the server certificate is verified against the list of supplied CAs. 
         # An error event is emitted if verification fails
-        rejectUnauthorized: true
+        rejectUnauthorized: false
       pool:
         min: 0
         max: 20
