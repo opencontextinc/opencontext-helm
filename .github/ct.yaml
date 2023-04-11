@@ -3,6 +3,7 @@ chart-repos:
   - opencontext=https://helm.opencontext.com
 chart-dirs:
   - charts
+target-branch: main
 check-version-increment: true
 debug: true
 exclude-deprecated: true
