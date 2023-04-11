@@ -52,3 +52,6 @@ sa-*.json
 # Other
 CNAME
 robots.txt
+
+# ci test files
+ci/
