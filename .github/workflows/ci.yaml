@@ -20,11 +20,11 @@ jobs:
           sudo apt-get install -y curl jq
       - name: Configure Git
         run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config user.name "OpenContext Bot"
+          git config user.email "100982940+opencontext-bot@users.noreply.github.com"
       - name: Check and update opencontext appVersion
         env:
-          TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          TOKEN: '${{ secrets.OC_BOT_GH_WRITE_TOKEN }}'
         run: .github/release-opencontext-version.sh
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.4.0
