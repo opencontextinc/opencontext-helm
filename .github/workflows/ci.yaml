@@ -52,8 +52,18 @@ jobs:
           fetch-depth: 0
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.4.0
-      - name: Copy example values into ci/
-        run: cp charts/opencontext/examples/*-values.yaml charts/opencontext/ci/
+      - name: Replace YAML placeholders in ci with secrets
+        env:
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          BB_USER: '${{ secrets.BB_USER }}'
+          BB_APP_PASSWORD: '${{ secrets.BB_APP_PASSWORD }}'
+          PAGERDUTY_TOKEN: '${{ secrets.PAGERDUTY_TOKEN }}'
+          GOOGLE_CLIENT_ID: '${{ secrets.DEV_GOOGLE_CLIENT_ID }}'
+          GOOGLE_CLIENT_SECRET: '${{ secrets.DEV_GOOGLE_CLIENT_SECRET }}'
+        run: |
+          sed -i -e "s/GH_TOKEN/$GH_TOKEN/g" -e "s/BB_USER/$BB_USER/g" -e "s/BB_APP_PASSWORD/$BB_APP_PASSWORD/g" \
+          -e "s/PAGERDUTY_TOKEN/$PAGERDUTY_TOKEN/g" -e "s/GOOGLE_CLIENT_ID/$GOOGLE_CLIENT_ID/g" -e "s/GOOGLE_CLIENT_SECRET/$GOOGLE_CLIENT_SECRET/g" \
+          charts/opencontext/ci/*.yaml
       - name: Run chart-testing (lint)
         run: ct lint --config .github/ct.yaml
 
@@ -93,7 +103,7 @@ jobs:
           fetch-depth: 0
       - name: Add opencontext helm repo
         run: |
-          helm repo add vector https://helm.opencontext.com
+          helm repo add opencontext https://helm.opencontext.com
           helm repo update
       - name: Run kubeval
         env:
@@ -124,8 +134,18 @@ jobs:
           node_image: kindest/node:${{ matrix.k8s }}
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.4.0
-      - name: Copy example values into ci/
-        run: cp charts/vector/examples/*-values.yaml charts/vector/ci/
+      - name: Replace YAML placeholders in ci with secrets
+        env:
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          BB_USER: '${{ secrets.BB_USER }}'
+          BB_APP_PASSWORD: '${{ secrets.BB_APP_PASSWORD }}'
+          PAGERDUTY_TOKEN: '${{ secrets.PAGERDUTY_TOKEN }}'
+          GOOGLE_CLIENT_ID: '${{ secrets.DEV_GOOGLE_CLIENT_ID }}'
+          GOOGLE_CLIENT_SECRET: '${{ secrets.DEV_GOOGLE_CLIENT_SECRET }}'
+        run: |
+          sed -i -e "s/GH_TOKEN/$GH_TOKEN/g" -e "s/BB_USER/$BB_USER/g" -e "s/BB_APP_PASSWORD/$BB_APP_PASSWORD/g" \
+          -e "s/PAGERDUTY_TOKEN/$PAGERDUTY_TOKEN/g" -e "s/GOOGLE_CLIENT_ID/$GOOGLE_CLIENT_ID/g" -e "s/GOOGLE_CLIENT_SECRET/$GOOGLE_CLIENT_SECRET/g" \
+          charts/opencontext/ci/*.yaml
       - name: Run chart-testing (install)
         run: ct install --config .github/ct.yaml --upgrade
 
