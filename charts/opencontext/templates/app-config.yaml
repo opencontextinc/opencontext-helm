@@ -30,6 +30,18 @@ data:
           apps:
             - $include: ../github/github-app-auth.yaml
           {{- end }}
+      {{- if .Values.app.bitbucket.enabled }}
+      bitbucket:
+        - host: {{ .Values.app.bitbucket.host | default "bitbucket.org" }}
+          {{- if eq .Values.app.bitbucket.authType "token" }}
+          token:
+            $file: ../secrets/BITBUCKET_SECRET
+          {{- else }}
+          username: {{ .Values.app.bitbucket.appAuth.username }}
+          appPassword:
+            $file: ../secrets/BITBUCKET_SECRET
+          {{- end }}
+      {{- end }}
       {{- if .Values.app.googleCloudStorage.enabled }}
       googleGcs:
         # See https://cloud.google.com/docs/authentication/application-default-credentials for credential search order

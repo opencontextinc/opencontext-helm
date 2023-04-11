@@ -16,23 +16,23 @@ data:
       intervalSecs: {{ .Values.app.catalog.intervalSecs }}
 
       locations:
-        ###
+        ####
         # GitHub Organization Discovery
         #
         # Example:
         #
         # type: github-org
         # target: https://github.com/scatter-ly
-        ###
+        ####
 
         {{- if .Values.app.catalog.locations.githubOrg }}
         {{- range .Values.app.catalog.locations.githubOrg }}
         - type: github-org
-          target: {{ . | quote }}
+          target: {{ . }}
         {{- end }}
         {{- end }}
 
-        ###
+        ####
         # GitHub Repository Discovery
         #
         # Example:
@@ -44,33 +44,63 @@ data:
         ## Look for only GitHub repo information
         # type: github-discovery
         # target: https://github.com/scatter-ly/sandbox/
-        ###
+        ####
 
         {{- if .Values.app.catalog.locations.githubDiscovery }}
         {{- range .Values.app.catalog.locations.githubDiscovery }}
         - type: github-discovery
-          target: {{ . | quote }}
+          target: {{ . }}
         {{- end }}
         {{- end }}
 
-        ###
-        # Public URL Discovery
+        ####
+        # Bitbucket Repository Discovery
         #
         # Example:
         #
-        ## Look for OpenContext YAML file definitions
+        ## Workspaces should be referenced using the workspace ID and projects should use the project key.
+        ### Discover all repositories in a workspace
+        # type: bitbucket-discovery
+        # target: https://bitbucket.org/workspaces/${WORKSPACE_ID}
+        #
+        ### Discover all repositories in a project
+        # type: bitbucket-discovery
+        # target: https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}
+        #
+        ### Select only a specific repository
+        # type: bitbucket-discovery
+        # target: https://bitbucket.org/workspaces/${WORKSPACE_ID}/${MY_REPO}
+        ####
+
+        {{- if .Values.app.catalog.locations.bitbucketDiscovery }}
+        {{- range .Values.app.catalog.locations.bitbucketDiscovery }}
+        - type: bitbucket-discovery
+          target: {{ . }}
+        {{- end }}
+        {{- end }}
+
+        ####
+        # URL Discovery
+        #
+        # Example:
+        #
+        ## Discover OpenContext catalog YAML file in a public GitHub repository
         # type: url
         # target: https://github.com/scatter-ly/publictest/blob/main/oc-catalog.yaml
-        ###
+        ## Discover all OpenContext YAML files in a specific Bitbucket repo
+        ## app.bitbucket.enabled must be true for the following to work
+        # type: url
+        # target: https://bitbucket.org/${WORKSPACE_ID}/${MY_REPO}/src/${MY_BRANCH}/*.yaml
+        ####
 
         {{- if .Values.app.catalog.locations.url }}
         {{- range .Values.app.catalog.locations.url }}
         - type: url
-          target: {{ . | quote }}
+          target: {{ . }}
         {{- end }}
         {{- end }}
 
-        ###
+        ####
         # Google Cloud Storage (GCS) Discovery
         # NOTE: In Values googleCloudStorage must be enabled for this to work
         #
@@ -79,13 +109,13 @@ data:
         ## Look for OpenContext YAML file definitions
         # type: gcs-discovery
         # target: https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*
-        ###
+        ####
 
         {{- if .Values.app.googleCloudStorage.enabled }}
         {{- if .Values.app.catalog.locations.gcsDiscovery }}
         {{- range .Values.app.catalog.locations.gcsDiscovery }}
         - type: gcs-discovery
-          target: {{ . | quote }}
+          target: {{ . }}
         {{- end }}
         {{- end }}
         {{- end }}
