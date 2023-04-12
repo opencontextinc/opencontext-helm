@@ -33,4 +33,4 @@ app:
       githubOrg:
         - https://github.com/scatter-ly
       githubDiscovery:
-        - https://github.com/scatter-ly
+        - https://github.com/scatter-ly/sandbox/
