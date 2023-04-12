@@ -94,7 +94,7 @@ jobs:
       matrix:
         # When changing versions here, check that the version exists at: https://github.com/yannh/kubernetes-json-schema and https://hub.docker.com/r/kindest/node/tags
         k8s:
-          - v1.26.1   # latest k3s version
+          - v1.26.0   # latest k3s version
           - v1.24.7   # GKE
           - v1.21.2   # Min version
     steps:
@@ -122,7 +122,7 @@ jobs:
       matrix:
         # When changing versions here, check that the version exists at: https://github.com/yannh/kubernetes-json-schema and https://hub.docker.com/r/kindest/node/tags
         k8s:
-          - v1.26.1   # latest k3s version
+          - v1.26.0   # latest k3s version
           - v1.24.7   # GKE
           - v1.21.2   # Min version
     steps:
