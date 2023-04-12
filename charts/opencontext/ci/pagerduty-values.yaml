@@ -1,0 +1,14 @@
+app:
+  orgName: Scatter.ly Demo Org
+  github:
+    authType: token
+    token: GH_TOKEN
+  pagerDuty:
+    enabled: true
+    token: PAGERDUTY_TOKEN
+  catalog:
+    locations:
+      githubOrg:
+        - https://github.com/scatter-ly
+      githubDiscovery:
+        - https://github.com/scatter-ly

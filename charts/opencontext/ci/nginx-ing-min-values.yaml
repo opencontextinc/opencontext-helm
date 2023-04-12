@@ -1,0 +1,21 @@
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+app:
+  orgName: Scatter.ly Demo Org
+  url: http://chart-example.local
+  github:
+    authType: token
+    token: GH_TOKEN
+  catalog:
+    locations:
+      githubOrg:
+        - https://github.com/scatter-ly
+      githubDiscovery:
+        - https://github.com/scatter-ly
