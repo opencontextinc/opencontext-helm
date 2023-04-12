@@ -94,7 +94,7 @@ tolerations: []
 affinity: {}
 
 #
-# Values for the PostgreSQL subchart from 
+# Values for the PostgreSQL subchart from
 # https://artifacthub.io/packages/helm/bitnami/postgresql
 #
 
@@ -144,7 +144,7 @@ app:
       password:
       ssl:
         enabled: true
-        # If true, the server certificate is verified against the list of supplied CAs. 
+        # If true, the server certificate is verified against the list of supplied CAs.
         # An error event is emitted if verification fails
         rejectUnauthorized: false
       pool:
@@ -181,7 +181,7 @@ app:
     provider:
       google:
         clientId:
-        clientSecret: 
+        clientSecret:
   catalog:
     intervalSecs: 200
     locations:
@@ -189,7 +189,7 @@ app:
     #    # Discover people and teams in GitHub org
     #    # URL Format: https://github.com/${MY_ORG}
     #    - https://github.com/scatter-ly
-      githubDiscovery: [] 
+      githubDiscovery: []
     #    # Discover repos, codepath and other assoicated artifacts in a GitHub repo
     #    # URL Format: https://github.com/${MY_ORG}/${MY_REPO}/
     #    - https://github.com/scatter-ly/publictest/
@@ -212,7 +212,7 @@ app:
     #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}
     #    - https://bitbucket.org/workspaces/${WORKSPACE_ID}
     #    # Discover all repositories in a project
-    #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY} 
+    #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}
     #    - https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}
     #    # Select only a specific repository
     #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/${MY_REPO}
