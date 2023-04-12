@@ -187,36 +187,38 @@ app:
     locations:
       githubOrg: []
     #    # Discover people and teams in GitHub org
-    #    # URL Format: https://github.com/${MY_ORG}
+    #    # URL Format: https://github.com/${GITHUB_ORG}
     #    - https://github.com/scatter-ly
       githubDiscovery: []
     #    # Discover repos, codepath and other assoicated artifacts in a GitHub repo
-    #    # URL Format: https://github.com/${MY_ORG}/${MY_REPO}/
+    #    # URL Format: https://github.com/${GITHUB_ORG}/${MY_REPO}/
+    #    # NOTE: The trailing slash is required!
     #    - https://github.com/scatter-ly/publictest/
     #    # Discover all OpenContext YAML files in a specific GitHub repo
-    #    # URL Format: https://github.com/${MY_ORG}/${MY_REPO}/blob/${MY_BRANCH}/*.yaml
+    #    # URL Format: https://github.com/${GITHUB_ORG}/${MY_REPO}/blob/${MY_BRANCH}/*.yaml
     #    - https://github.com/scatter-ly/scatter.ly/blob/main/*.yaml
     #  url:
     #    # Discover OpenContext catalog YAML file in a public GitHub repository
     #    - https://github.com/scatter-ly/publictest/blob/main/oc-catalog.yaml
     #    # Discover all OpenContext YAML files in a specific BitBucket repo
+    #    # NOTE: Bitbucket must be enabled
     #    # URL Format: https://bitbucket.org/${WORKSPACE_ID}/${MY_REPO}/src/${MY_BRANCH}/*.yaml
     #    - https://bitbucket.org/scatter-ly/scatter.ly/src/main/*.yaml
     #  gcsDiscovery:
     #    # Discover all OpenContext YAML files in a Google Cloud Storage bucket
     #    # URL Format: https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*
-    #    - https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*
+    #    - https://storage.cloud.google.com/scatterly/yaml/uploads/*
     #  bitbucketDiscovery:
     #    # Workspaces should be referenced using the workspace ID and projects should use the project key.
     #    # Discover all repositories in a workspace
     #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}
-    #    - https://bitbucket.org/workspaces/${WORKSPACE_ID}
+    #    - https://bitbucket.org/workspaces/scatterly
     #    # Discover all repositories in a project
     #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}
-    #    - https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}
+    #    - https://bitbucket.org/workspaces/scatterly/projects/CRATES
     #    # Select only a specific repository
     #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/${MY_REPO}
-    #    - https://bitbucket.org/workspaces/${WORKSPACE_ID}/${MY_REPO}
+    #    - https://bitbucket.org/workspaces/scatterly/crates-frontend
     #    # Search for OpenContext catalog YAML file in all repositories in a project
     #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml
-    #    - https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml
+    #    - https://bitbucket.org/workspaces/scatterly/projects/CRATES/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml
