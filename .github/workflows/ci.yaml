@@ -101,10 +101,11 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Add opencontext helm repo
+      - name: Add opencontext helm repo and install kubeconform plugin
         run: |
           helm repo add opencontext https://helm.opencontext.com
           helm repo update
+          helm plugin install https://github.com/jtyr/kubeconform-helm
       - name: Run kubeconform
         env:
           KUBERNETES_VERSION: ${{ matrix.k8s }}
