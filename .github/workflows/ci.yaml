@@ -3,6 +3,8 @@ name: Lint and Test Charts
 
 on:
   pull_request:
+    paths:
+      - 'charts/**'
 
 jobs:
   changed:
@@ -31,11 +33,12 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed --config .github/ct.yaml)
+          changed=$(ct list-changed --config .github/ct.yaml | grep -v ">>> ")
           if [[ -n "$changed" ]]; then
             echo -n "Charts changed:"
             echo "$changed"
-            echo "::set-output name=changed::$changed"
+            # Set output
+            echo "changed=$changed" >> "$GITHUB_OUTPUT"
           else
             echo "PR without any chart changes - failing"
             exit 1
@@ -85,7 +88,7 @@ jobs:
           helm-docs
           git diff --exit-code
 
-  kubeval-chart:
+  kubeconform-chart:
     runs-on: ubuntu-latest
     needs:
       - changed
@@ -93,35 +96,36 @@ jobs:
       matrix:
         # When changing versions here, check that the version exists at: https://github.com/yannh/kubernetes-json-schema and https://hub.docker.com/r/kindest/node/tags
         k8s:
-          - v1.26.1   # latest k3s version
-          - v1.24.9   # GKE
+          - v1.26.0   # latest k3s version
+          - v1.24.7   # GKE
           - v1.21.2   # Min version
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Add opencontext helm repo
+      - name: Add opencontext helm repo and install kubeconform plugin
         run: |
           helm repo add opencontext https://helm.opencontext.com
           helm repo update
-      - name: Run kubeval
+          helm plugin install https://github.com/jtyr/kubeconform-helm
+      - name: Run kubeconform
         env:
           KUBERNETES_VERSION: ${{ matrix.k8s }}
           CHANGED_CHARTS: ${{needs.changed.outputs.charts}}
-        run: .github/kubeval.sh
+        run: .github/kubeconform.sh
 
   install-chart:
     runs-on: ubuntu-latest
     needs:
       - lint-chart
-      - kubeval-chart
+      - kubeconform-chart
     strategy:
       matrix:
         # When changing versions here, check that the version exists at: https://github.com/yannh/kubernetes-json-schema and https://hub.docker.com/r/kindest/node/tags
         k8s:
-          - v1.26.1   # latest k3s version
-          - v1.24.9   # GKE
+          - v1.26.0   # latest k3s version
+          - v1.24.7   # GKE
           - v1.21.2   # Min version
     steps:
       - name: Checkout
@@ -146,8 +150,19 @@ jobs:
           sed -i -e "s/GH_TOKEN/$GH_TOKEN/g" -e "s/BB_USER/$BB_USER/g" -e "s/BB_APP_PASSWORD/$BB_APP_PASSWORD/g" \
           -e "s/PAGERDUTY_TOKEN/$PAGERDUTY_TOKEN/g" -e "s/GOOGLE_CLIENT_ID/$GOOGLE_CLIENT_ID/g" -e "s/GOOGLE_CLIENT_SECRET/$GOOGLE_CLIENT_SECRET/g" \
           charts/opencontext/ci/*.yaml
+      - name: Create Google SA file and imagePullSecret
+        env:
+          GCP_SA: ${{ secrets.ONPREM_SA_PROD_BASE64 }}
+        run: |
+          echo "$GCP_SA" | base64 --decode > gcp-sa.json
+          chmod 600 gcp-sa.json
+          ls -l gcp-sa.json
+          grep project_id gcp-sa.json
+          grep client_email gcp-sa.json
+          kubectl create namespace opencontext
+          kubectl create secret docker-registry opencontext-artifact-registry --namespace opencontext --docker-server=https://us-docker.pkg.dev --docker-email=sa-test-onprem@vpc-host-nonprod-345521.iam.gserviceaccount.com --docker-username=_json_key --docker-password="$(cat gcp-sa.json)"
       - name: Run chart-testing (install)
-        run: ct install --config .github/ct.yaml --upgrade
+        run: ct install --config .github/ct.yaml --upgrade --namespace opencontext
 
   pr-validated:
     name: pr-validated
