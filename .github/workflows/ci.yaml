@@ -150,7 +150,7 @@ jobs:
           charts/opencontext/ci/*.yaml
       - name: Create Google SA file and imagePullSecret
         env:
-          GCP_SA: ${{ secrets.FIREBASE_SA_PRODUCT_PRODUCTION_326216_BASE64 }}
+          GCP_SA: ${{ secrets.ONPREM_SA_PROD_BASE64 }}
         run: |
           echo "$GCP_SA" | base64 --decode > gcp-sa.json
           chmod 600 gcp-sa.json
