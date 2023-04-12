@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - lint-chart
-      - kubeval-chart
+      - kubeconform-chart
     strategy:
       matrix:
         # When changing versions here, check that the version exists at: https://github.com/yannh/kubernetes-json-schema and https://hub.docker.com/r/kindest/node/tags
