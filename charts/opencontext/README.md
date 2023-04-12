@@ -1,0 +1,229 @@
+# OpenContext Helm Charts
+
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.10.2](https://img.shields.io/badge/AppVersion-v0.10.2-informational?style=flat-square)
+
+[OpenContext](https://opencontext.com) helps get DevSecOps on the same page by untangling the complex relationships between people, code, and services with shared context.
+
+## How to use OpenContext Helm repository
+
+You need to add this repository to your Helm repositories:
+
+```
+helm repo add opencontext https://helm.opencontext.com
+helm repo update
+```
+
+## Prerequisites
+
+- Helm 3 -- See the [Installing Helm docs](https://helm.sh/docs/intro/install) for more information.
+- imagePullSecret -- Please contact sales@opencontext.com to create this if you don't already have a registry key.
+- [GitHub credentials](https://docs.opencontext.com/docs/configuration/github-credentials) -- Decide whether to use a token or a GitHub app credential. If you're working with multiple organizations, then it's preferable to use a token.
+
+## Requirements
+
+Kubernetes: `>=1.21.0`
+
+| Repository | Name | Version |
+|------------|------|---------|
+| https://charts.bitnami.com/bitnami | postgresql | 11.9.13 |
+
+## Quick Start
+
+### Namespace
+
+It is highly recommended for you to create a namespace for OpenContext. In this document we will use the `opencontext` namespace.
+
+```shell
+kubectl create namespace opencontext
+```
+
+### Image Pull Secret
+
+The OpenContext Helm chart uses a private Docker registry. In order to pull the image from this Docker registry, you'll need a key for the registry. This can be obtained from sales@opencontext.com if you don't already have one.
+
+Once you have a key, run the following command to create an `imagePullSecret` called `opencontext-artifact-registry`:
+
+```shell
+kubectl create secret docker-registry opencontext-artifact-registry \
+--docker-server=https://us-docker.pkg.dev \
+--docker-email=sa-opencontext-registry@vpc-host-prod-345521.iam.gserviceaccount.com \
+--docker-username=_json_key --docker-password="$(cat $PATH_TO_REGISTRY_JSON_KEY)" \
+--namespace opencontext
+```
+
+### Add the OpenContext Helm repository
+
+```shell
+helm repo add opencontext https://helm.opencontext.com
+helm repo update
+```
+
+### Installing the OpenContext chart
+
+To install the chart in the `opencontext` namespace with the release name `<RELEASE_NAME>`, GitHub token `<GH_TOKEN>`, GitHub org `<GH_ORG>`, and org name `<YOUR_ORG>` run:
+
+```shell
+helm install  --namespace opencontext --name-template=<RELEASE_NAME> \
+  --set "app.orgName=<YOUR_ORG>" \
+  --set app.github.token=<GH_TOKEN> \
+  --set "app.catalog.locations.githubOrg[0]=https://github.com/<GH_ORG>" \
+  --set "app.catalog.locations.githubDiscovery[0]=https://github.com/<GH_ORG>" \
+  opencontext/opencontext
+```
+
+After installing the chart follow the instructions to port-forward the OpenContext service. Then visit http://localhost:8080 in your browser to use the application.
+
+### Uninstalling OpenContext
+
+To uninstall the OpenContext `<RELEASE_NAME>` release from the namespace `opencontext`:
+
+```shell
+NAMESPACE=opencontext
+RELEASE_NAME=<release-name> # use `helm list` to find out the name
+helm uninstall --namespace ${NAMESPACE} ${RELEASE_NAME}
+kubectl --namespace ${NAMESPACE} delete secret opencontext-github-app-auth opencontext-google-cloud-storage opencontext-postgresql opencontext-postgresql-certs opencontext-postgresql-initdb opencontext-tls ${RELEASE_NAME}-opencontext-auth
+kubectl --namespace ${NAMESPACE} delete configmap ${RELEASE_NAME}-opencontext-db-pool ${RELEASE_NAME}-opencontext-locations ${RELEASE_NAME}-opencontext-postgres-ca ${RELEASE_NAME}-opencontext-config
+kubectl --namespace ${NAMESPACE} delete pvc data-${RELEASE_NAME}-opencontext-postgresql-0
+```
+
+The command removes all the Kubernetes components associated with the chart and deletes the release.
+
+## Configuration
+
+As a best practice, a YAML file that specifies the values for the chart parameters should be used to configure the chart. Any parameters not specified in this file will default to those set in [values.yaml](https://github.com/opencontextinc/opencontext-helm/blob/main/charts/opencontext/values.yaml) file.  To install the chart in the `opencontext` namespace with the release name `<RELEASE_NAME>`, GitHub token `<GH_TOKEN>`, GitHub org `<GH_ORG>`, and org name `<YOUR_ORG>` do the following:
+
+1. Create an empty `opencontext-values.yaml` file.
+2. Set the following parameters in your `opencontext-values.yaml` file.
+
+```yaml
+app:
+  orgName: <YOUR_ORG>
+  github:
+    authType: token
+    token: <GH_TOKEN>
+  catalog:
+    locations:
+      githubOrg:
+        - https://github.com/<GH_ORG>
+      githubDiscovery:
+        - https://github.com/<GH_ORG>
+```
+
+3. Install or upgrade the OpenContext Helm chart with the new `opencontext-values.yaml` file:
+
+```shell
+helm install --namespace opencontext --name-template=<RELEASE_NAME>
+  -f opencontext-values.yaml opencontext/opencontext
+```
+
+OR
+
+```shell
+helm upgrade --namespace opencontext --name-template=<RELEASE_NAME>
+  -f opencontext-values.yaml opencontext/opencontext
+```
+
+See the [All configuration options](#all-configuration-options) section to discover all the possibilities in the OpenContext chart.
+
+## All configuration options
+
+The following table lists the configurable parameters of the OpenContext chart and their default values. Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
+
+```bash
+helm install  --namespace opencontext --name-template=<RELEASE_NAME> \
+  --set "app.orgName=<YOUR_ORG>" \
+  --set app.github.token=<GH_TOKEN> \
+  --set "app.catalog.locations.githubOrg[0]=https://github.com/<GH_ORG>" \
+  --set "app.catalog.locations.githubDiscovery[0]=https://github.com/<GH_ORG>" \
+  opencontext/opencontext
+```
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| affinity | object | `{}` |  |
+| app.auth.enabled | bool | `false` |  |
+| app.auth.provider.google.clientId | string | `nil` |  |
+| app.auth.provider.google.clientSecret | string | `nil` |  |
+| app.catalog.intervalSecs | int | `200` |  |
+| app.database.connection.host | string | `nil` |  |
+| app.database.connection.password | string | `nil` |  |
+| app.database.connection.pool.max | int | `20` |  |
+| app.database.connection.pool.min | int | `0` |  |
+| app.database.connection.port | string | `nil` |  |
+| app.database.connection.ssl.enabled | bool | `true` |  |
+| app.database.connection.ssl.rejectUnauthorized | bool | `false` |  |
+| app.database.connection.user | string | `nil` |  |
+| app.database.prefix | string | `"opencontext_"` |  |
+| app.github.appAuth.appAuthSecret | string | `"opencontext-github-app-auth"` |  |
+| app.github.appAuth.createAppAuthFromFile | string | `nil` |  |
+| app.github.authType | string | `"token"` |  |
+| app.github.host | string | `nil` |  |
+| app.github.token | string | `nil` |  |
+| app.googleCloudStorage.createServiceAccountFromFile | string | `nil` |  |
+| app.googleCloudStorage.enabled | bool | `false` |  |
+| app.googleCloudStorage.serviceAccountSecret | string | `"opencontext-google-cloud-storage"` |  |
+| app.googleCloudStorage.useServiceAccount | bool | `false` |  |
+| app.orgName | string | `nil` |  |
+| app.pagerDuty.enabled | bool | `false` |  |
+| app.pagerDuty.token | string | `nil` |  |
+| app.url | string | `nil` |  |
+| autoscaling.enabled | bool | `false` |  |
+| autoscaling.maxReplicas | int | `100` |  |
+| autoscaling.minReplicas | int | `1` |  |
+| autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| fullnameOverride | string | `""` |  |
+| global.nodeSelector | object | `{}` |  |
+| global.postgresql.auth.existingSecret | string | `"opencontext-postgresql"` |  |
+| global.postgresql.auth.username | string | `"opencontext"` |  |
+| global.postgresql.caFilename | string | `"ca.crt"` |  |
+| image.pullPolicy | string | `"Always"` |  |
+| image.repository | string | `"us-docker.pkg.dev/vpc-host-prod-345521/oc-docker/opencontext"` |  |
+| image.tag | string | `"latest"` |  |
+| imagePullSecrets[0].name | string | `"opencontext-artifact-registry"` |  |
+| ingress.annotations | string | `nil` |  |
+| ingress.className | string | `nil` |  |
+| ingress.enabled | bool | `true` |  |
+| ingress.hosts | list | `[]` |  |
+| ingress.tls | list | `[]` |  |
+| issuer.clusterIssuer | string | `"selfsigned-issuer"` |  |
+| issuer.email | string | `nil` |  |
+| livenessProbe.failureThreshold | int | `1` |  |
+| livenessProbe.periodSeconds | int | `10` |  |
+| livenessProbe.tcpSocket.port | int | `7007` |  |
+| nameOverride | string | `""` |  |
+| nodeSelector | object | `{}` |  |
+| podAnnotations | object | `{}` |  |
+| podSecurityContext.fsGroup | int | `1000` |  |
+| podSecurityContext.fsGroupChangePolicy | string | `"OnRootMismatch"` |  |
+| podSecurityContext.runAsGroup | int | `1000` |  |
+| podSecurityContext.runAsUser | int | `1000` |  |
+| postgresql.commonLabels."app.kubernetes.io/part-of" | string | `"opencontext-server"` |  |
+| postgresql.enabled | bool | `true` |  |
+| postgresql.nameOverride | string | `"opencontext-postgresql"` |  |
+| postgresql.primary.initdb.scriptsSecret | string | `"opencontext-postgresql-initdb"` |  |
+| postgresql.primary.persistence.enabled | bool | `true` |  |
+| postgresql.primary.persistence.size | string | `"10Gi"` |  |
+| postgresql.service.port | int | `5432` |  |
+| postgresql.tls.certFilename | string | `"tls.crt"` |  |
+| postgresql.tls.certKeyFilename | string | `"tls.key"` |  |
+| postgresql.tls.certificatesSecret | string | `"opencontext-postgresql-certs"` |  |
+| postgresql.tls.enabled | bool | `true` |  |
+| postgresql.volumePermissions.enabled | bool | `true` |  |
+| replicaCount | int | `1` |  |
+| resources | object | `{}` |  |
+| securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| securityContext.runAsGroup | int | `1000` |  |
+| securityContext.runAsNonRoot | bool | `true` |  |
+| securityContext.runAsUser | int | `1000` |  |
+| service.port | int | `7007` |  |
+| service.type | string | `"ClusterIP"` |  |
+| serviceAccount.annotations | object | `{}` |  |
+| serviceAccount.create | bool | `true` |  |
+| serviceAccount.name | string | `""` |  |
+| startupProbe.failureThreshold | int | `30` |  |
+| startupProbe.periodSeconds | int | `10` |  |
+| startupProbe.tcpSocket.port | int | `7007` |  |
+| tolerations | list | `[]` |  |
+
