@@ -154,6 +154,9 @@ jobs:
         run: |
           echo "$GCP_SA" | base64 --decode > gcp-sa.json
           chmod 600 gcp-sa.json
+          ls -l gcp-sa.json
+          grep project_id gcp-sa.json
+          grep client_email gcp-sa.json
           kubectl create namespace opencontext
           kubectl create secret docker-registry opencontext-artifact-registry --namespace opencontext --docker-server=https://us-docker.pkg.dev --docker-email=sa-test-onprem@vpc-host-nonprod-345521.iam.gserviceaccount.com --docker-username=_json_key --docker-password="$(cat gcp-sa.json)"
       - name: Run chart-testing (install)
