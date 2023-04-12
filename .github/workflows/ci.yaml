@@ -148,8 +148,16 @@ jobs:
           sed -i -e "s/GH_TOKEN/$GH_TOKEN/g" -e "s/BB_USER/$BB_USER/g" -e "s/BB_APP_PASSWORD/$BB_APP_PASSWORD/g" \
           -e "s/PAGERDUTY_TOKEN/$PAGERDUTY_TOKEN/g" -e "s/GOOGLE_CLIENT_ID/$GOOGLE_CLIENT_ID/g" -e "s/GOOGLE_CLIENT_SECRET/$GOOGLE_CLIENT_SECRET/g" \
           charts/opencontext/ci/*.yaml
+      - name: Create Google SA file and imagePullSecret
+        env:
+          GCP_SA: ${{ secrets.FIREBASE_SA_PRODUCT_PRODUCTION_326216_BASE64 }}
+        run: |
+          echo "$GCP_SA" | base64 --decode > gcp-sa.json
+          chmod 600 gcp-sa.json
+          kubectl create namespace opencontext
+          kubectl create secret docker-registry opencontext-artifact-registry --namespace opencontext --docker-server=https://us-docker.pkg.dev --docker-email=sa-test-onprem@vpc-host-nonprod-345521.iam.gserviceaccount.com --docker-username=_json_key --docker-password="$(cat gcp-sa.json)"
       - name: Run chart-testing (install)
-        run: ct install --config .github/ct.yaml --upgrade
+        run: ct install --config .github/ct.yaml --upgrade --namespace opencontext
 
   pr-validated:
     name: pr-validated
