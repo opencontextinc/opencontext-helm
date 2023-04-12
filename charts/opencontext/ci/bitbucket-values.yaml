@@ -20,4 +20,3 @@ app:
       bitbucketDiscovery:
         - https://bitbucket.org/workspaces/opencontext/projects/DEMO
         - https://bitbucket.org/workspaces/oc-test/projects/TESTPRJ
-
