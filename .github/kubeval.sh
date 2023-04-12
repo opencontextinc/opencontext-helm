@@ -2,7 +2,7 @@
 # Credit: https://github.com/DataDog/helm-charts/blob/main/.github/kubeval.sh
 set -euo pipefail
 
-KUBEVAL_VERSION="0.16.1"
+KUBEVAL_VERSION="1.21.2"
 SCHEMA_LOCATION="https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/" # Up-to-date fork of instrumenta/kubernetes-json-schema
 OS=$(uname)
 
