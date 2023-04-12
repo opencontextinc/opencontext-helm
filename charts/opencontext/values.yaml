@@ -54,13 +54,14 @@ service:
   port: 7007
 
 ingress:
-  enabled: true
+  enabled: false
   className:
   annotations:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     # cert-manager.io/cluster-issuer: selfsigned-issuer
   hosts: []
+    # Make sure to change app.url to match the host set
   tls: []
 
 issuer:
@@ -93,7 +94,7 @@ tolerations: []
 affinity: {}
 
 #
-# Values for the PostgreSQL subchart from 
+# Values for the PostgreSQL subchart from
 # https://artifacthub.io/packages/helm/bitnami/postgresql
 #
 
@@ -131,8 +132,9 @@ postgresql:
 # Values for OpenContext
 app:
   orgName:
-  # HTTPS URL
-  url: 
+  # If Ingress is disabled use kubectl port-forward to forward the OpenContext service to port 8080
+  # You will then be able to access it at http://localhost:8080
+  url: http://localhost:8080
   database:
     prefix: opencontext_
     connection:
@@ -142,7 +144,7 @@ app:
       password:
       ssl:
         enabled: true
-        # If true, the server certificate is verified against the list of supplied CAs. 
+        # If true, the server certificate is verified against the list of supplied CAs.
         # An error event is emitted if verification fails
         rejectUnauthorized: false
       pool:
@@ -151,11 +153,20 @@ app:
   github:
     # token or app
     authType: token
-    token:
+    token: MY_TOKEN
     host:
     appAuth:
       appAuthSecret: opencontext-github-app-auth
       createAppAuthFromFile:
+  bitbucket:
+    enabled: false
+    # appPassword or token
+    authType: appPassword
+    token:
+    host:
+    appAuth:
+      username:
+      appPassword:
   pagerDuty:
     enabled: false
     token:
@@ -170,17 +181,42 @@ app:
     provider:
       google:
         clientId:
-        clientSecret: 
+        clientSecret:
   catalog:
     intervalSecs: 200
-    #locations:
-    #  githubOrg:
+    locations:
+      githubOrg: []
+    #    # Discover people and teams in GitHub org
+    #    # URL Format: https://github.com/${MY_ORG}
     #    - https://github.com/scatter-ly
-    #  githubDiscovery:
+      githubDiscovery: []
+    #    # Discover repos, codepath and other assoicated artifacts in a GitHub repo
+    #    # URL Format: https://github.com/${MY_ORG}/${MY_REPO}/
+    #    - https://github.com/scatter-ly/publictest/
+    #    # Discover all OpenContext YAML files in a specific GitHub repo
+    #    # URL Format: https://github.com/${MY_ORG}/${MY_REPO}/blob/${MY_BRANCH}/*.yaml
     #    - https://github.com/scatter-ly/scatter.ly/blob/main/*.yaml
-    #    - https://github.com/scatter-ly/sandbox/
     #  url:
+    #    # Discover OpenContext catalog YAML file in a public GitHub repository
     #    - https://github.com/scatter-ly/publictest/blob/main/oc-catalog.yaml
+    #    # Discover all OpenContext YAML files in a specific BitBucket repo
+    #    # URL Format: https://bitbucket.org/${WORKSPACE_ID}/${MY_REPO}/src/${MY_BRANCH}/*.yaml
+    #    - https://bitbucket.org/scatter-ly/scatter.ly/src/main/*.yaml
     #  gcsDiscovery:
+    #    # Discover all OpenContext YAML files in a Google Cloud Storage bucket
     #    # URL Format: https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*
     #    - https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*
+    #  bitbucketDiscovery:
+    #    # Workspaces should be referenced using the workspace ID and projects should use the project key.
+    #    # Discover all repositories in a workspace
+    #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}
+    #    - https://bitbucket.org/workspaces/${WORKSPACE_ID}
+    #    # Discover all repositories in a project
+    #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}
+    #    - https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}
+    #    # Select only a specific repository
+    #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/${MY_REPO}
+    #    - https://bitbucket.org/workspaces/${WORKSPACE_ID}/${MY_REPO}
+    #    # Search for OpenContext catalog YAML file in all repositories in a project
+    #    # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml
+    #    - https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml
