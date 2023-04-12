@@ -32,10 +32,11 @@ jobs:
         id: list-changed
         run: |
           changed=$(ct list-changed --config .github/ct.yaml)
+          set -x
           if [[ -n "$changed" ]]; then
             echo -n "Charts changed:"
             echo "$changed"
-            echo "::set-output name=changed::$changed"
+            echo "changed=$changed"
           else
             echo "PR without any chart changes - failing"
             exit 1
