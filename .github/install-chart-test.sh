@@ -18,7 +18,7 @@ fi
 
 # install charts
 for CHART_DIR in ${CHART_DIRS}; do
-  echo
+  echo ""
   echo "INFO: Running chart-testing for chart ${CHART_DIR}"
   # Can't configure chart-testing to use another directory other than the ci directory
   # So moving ci folder aside
@@ -35,12 +35,16 @@ for CHART_DIR in ${CHART_DIRS}; do
       exit 1
     fi
 
-    # Figure out Helm release name by getting the PostgreSQL PVC which always needs to be cleaned up
-    RELEASE_NAME=$(kubectl --namespace opencontext get pvc | grep "data-opencontext-" | awk '{print $1}' | cut -d'-' -f3)
+    # Figure out Helm release name(s) by getting the PostgreSQL PVC which always needs to be cleaned up
+    # can get multiple release names since chart-test trys regular install and upgrade
+    RELEASE_NAMES=$(kubectl --namespace opencontext get pvc | grep "data-opencontext-" | awk '{print $1}' | cut -d'-' -f3)
 
-    # remove file in ci and run uninstall script
+    # run uninstall script for all releases 
+    for r in $RELEASE_NAMES; do
+      .github/uninstall-chart.sh opencontext "opencontext-${r}"
+    done
+
+    # remove file from ci directory
     rm "${CHART_DIR}/ci/${f##*/}"
-    set -x
-    .github/uninstall-chart.sh opencontext "opencontext-${RELEASE_NAME}"
   done
 done
