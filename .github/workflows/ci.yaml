@@ -87,7 +87,7 @@ jobs:
           version: 1.11.0
       - name: Run helm-docs
         run: |
-          helm-docs
+          helm-docs -t README.md.gotmpl -o README.md
           git diff --exit-code
 
   kubeconform-chart:
