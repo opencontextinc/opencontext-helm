@@ -14,7 +14,7 @@ image:
   tag: latest
 
 imagePullSecrets:
-  # -- The [imagePullSecrets](https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod) 
+  # -- The [imagePullSecrets](https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod)
   # to reference for the opencontext app
   - name: opencontext-artifact-registry
 # -- Override the name of resources
@@ -123,7 +123,7 @@ autoscaling:
   # -- Target CPU utilization for HPA
   targetCPUUtilizationPercentage: 80
   # -- (int) Target memory utilization for HPA
-  targetMemoryUtilizationPercentage: 
+  targetMemoryUtilizationPercentage:
 
 # -- Configure a [nodeSelector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)
 nodeSelector: {}
@@ -147,7 +147,7 @@ global:
     auth:
       # -- Name for a custom user to create
       username: opencontext
-      # -- Name of existing secret to use for PostgreSQL credentials. Need an entry for `password` and `postgres-password`. 
+      # -- Name of existing secret to use for PostgreSQL credentials. Need an entry for `password` and `postgres-password`.
       # See [docs](https://docs.bitnami.com/kubernetes/infrastructure/apache-airflow/administration/use-existing-secrets/) for more instructions.
       existingSecret: opencontext-postgresql
     # -- PostgreSQL CA certificate filename
@@ -155,7 +155,7 @@ global:
   nodeSelector: {}
 
 # PostgreSQL subchart
-# -- Configuration for the Bitnami PostgreSQL subchart. [Values](https://artifacthub.io/packages/helm/bitnami/postgresql) for the subchart can be found on 
+# -- Configuration for the Bitnami PostgreSQL subchart. [Values](https://artifacthub.io/packages/helm/bitnami/postgresql) for the subchart can be found on
 # [ArtifactHUB.io](https://artifacthub.io/packages/helm/bitnami/postgresql).
 postgresql:
   # -- if true, use Bitnami PostgreSQL subchart to create a database.
