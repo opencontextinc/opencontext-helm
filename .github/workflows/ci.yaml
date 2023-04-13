@@ -55,6 +55,8 @@ jobs:
           fetch-depth: 0
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.4.0
+      - name: Copy examples to ci
+        run: cp charts/opencontext/examples/*-values.yaml charts/opencontext/ci
       - name: Replace YAML placeholders in ci with secrets
         env:
           GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
@@ -67,8 +69,6 @@ jobs:
           sed -i -e "s/GH_TOKEN/$GH_TOKEN/g" -e "s/BB_USER/$BB_USER/g" -e "s/BB_APP_PASSWORD/$BB_APP_PASSWORD/g" \
           -e "s/PAGERDUTY_TOKEN/$PAGERDUTY_TOKEN/g" -e "s/GOOGLE_CLIENT_ID/$GOOGLE_CLIENT_ID/g" -e "s/GOOGLE_CLIENT_SECRET/$GOOGLE_CLIENT_SECRET/g" \
           charts/opencontext/ci/*.yaml
-      - name: Copy examples to ci
-        run: cp charts/opencontext/examples/*-values.yaml charts/opencontext/ci
       - name: Run chart-testing (lint)
         run: ct lint --config .github/ct.yaml
 
