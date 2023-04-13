@@ -27,6 +27,7 @@ for CHART_DIR in ${CHART_DIRS}; do
 
   # Iterate through *-values.yaml files in example directory
   for f in "${CHART_DIR}"/examples/*-values.yaml; do
+    echo "INFO: Running chart-test for ${CHART_DIR} with values ${CHART_DIR}/ci/${f##*/}"
     cp "${f}" "${CHART_DIR}/ci/${f##*/}"
     # Run the test and if it errors out stop testing
     if ! ct install --config .github/ct.yaml --upgrade --namespace opencontext --charts "${CHART_DIR}"; then
