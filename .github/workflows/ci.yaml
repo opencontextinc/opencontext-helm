@@ -57,7 +57,7 @@ jobs:
         uses: helm/chart-testing-action@v2.4.0
       - name: Copy examples to ci
         run: cp charts/opencontext/examples/*-values.yaml charts/opencontext/ci
-      - name: Replace YAML placeholders in ci with secrets
+      - name: Replace YAML placeholders in examples with secrets
         env:
           GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           BB_USER: '${{ secrets.BB_USER }}'
@@ -134,10 +134,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y tree
       - name: Create kind ${{ matrix.k8s }}
         uses: helm/kind-action@main
         with:
@@ -155,7 +151,7 @@ jobs:
         run: |
           sed -i -e "s/GH_TOKEN/$GH_TOKEN/g" -e "s/BB_USER/$BB_USER/g" -e "s/BB_APP_PASSWORD/$BB_APP_PASSWORD/g" \
           -e "s/PAGERDUTY_TOKEN/$PAGERDUTY_TOKEN/g" -e "s/GOOGLE_CLIENT_ID/$GOOGLE_CLIENT_ID/g" -e "s/GOOGLE_CLIENT_SECRET/$GOOGLE_CLIENT_SECRET/g" \
-          charts/opencontext/ci/*.yaml
+          charts/opencontext/examples/*-values.yaml
       - name: Create Google SA file and imagePullSecret
         env:
           GCP_SA: ${{ secrets.ONPREM_SA_PROD_BASE64 }}
