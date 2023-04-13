@@ -39,6 +39,7 @@ for CHART_DIR in ${CHART_DIRS}; do
 
     # remove file in ci and run uninstall script
     rm "${CHART_DIR}/ci/${f##*/}"
+    set -x
     .github/uninstall-chart.sh opencontext "opencontext-${RELEASE_NAME}"
   done
 done
