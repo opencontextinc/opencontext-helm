@@ -21,7 +21,7 @@ if [[ ${OC_VERSION}zz == "zz" || ${OC_VERSION} == "null" ]]; then
   exit 1
 fi
 
-echo "INFO: Branch ${BRANCH}"
+echo "INFO: Branch ${BRANCH_NAME}"
 
 if [[ "${OC_VERSION}" != "${CHART_APP_VERSION}" ]]; then
   echo "INFO: Updating chart appVersion ..."
