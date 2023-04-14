@@ -2,71 +2,105 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- Number of pods to create
 replicaCount: 1
 
 image:
+  # -- OpenContext image
   repository: "us-docker.pkg.dev/vpc-host-prod-345521/oc-docker/opencontext"
+  # -- Image pull policy
   pullPolicy: Always
+  # -- Image tag
   tag: latest
 
 imagePullSecrets:
+  # -- The [imagePullSecrets](https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod)
+  # to reference for the opencontext app
   - name: opencontext-artifact-registry
+# -- Override the name of resources
 nameOverride: ""
+# -- Override the full name of resources
 fullnameOverride: ""
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+# -- Set annotations on pods
 podAnnotations: {}
 
+# -- Allows you to overwrite the default [PodSecurityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
 podSecurityContext:
   runAsUser: 1000
   runAsGroup: 1000
   fsGroup: 1000
   fsGroupChangePolicy: "OnRootMismatch"
 
+# -- Allows you to overwrite the default [SecurityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
 securityContext:
   allowPrivilegeEscalation: false
   runAsNonRoot: true
   runAsUser: 1000
   runAsGroup: 1000
 
+# @ignore
+# Ignore for now since port that application runs on is not configurable for now
+# Configure the healthcheck for the application
 livenessProbe:
   tcpSocket:
     port: 7007
   failureThreshold: 1
   periodSeconds: 10
 
+# @ignore
+# Ignore for now since port that application runs on is not configurable for now
 startupProbe:
   tcpSocket:
     port: 7007
   failureThreshold: 30
   periodSeconds: 10
 
+# @ignore
+# Ignore for now since port that application runs on is not configurable for now
 service:
   type: ClusterIP
   port: 7007
 
 ingress:
-  enabled: true
+  # -- If true, create and use an Ingress resource.
+  enabled: false
+  # -- Specify the [ingressClassName](https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress)
   className:
+  # -- Set annotations on the Ingress. If `issuer.clusterIssuer` is set then add the annotation `cert-manager.io/cluster-issuer` here.
   annotations:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     # cert-manager.io/cluster-issuer: selfsigned-issuer
+  # -- Configure the hosts and paths for the Ingress. Make sure to change the `app.url` to match the host set
   hosts: []
+  #  - host: chart-example.local
+  #    paths:
+  #      - path: /
+  #        pathType: Prefix
+  # -- Configure the TLS for the Ingress.
   tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
 
+# - Installs or reuses a [cert-manager](https://cert-manager.io/docs/) `ClusterIssuer` to generate certificates for the Ingress.
 issuer:
+  # -- Required if `issuer.clusterIssuer` is not `selfsigned-issuer`
   email:
+  # -- ClusterIssuer. Must be one of `selfsigned-issuer`, `letsencrypt-staging`, or `letsencrypt-prod`
   clusterIssuer: selfsigned-issuer
 
+# -- Set resource requests and limits.
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -80,107 +114,255 @@ resources: {}
   #   memory: 128Mi
 
 autoscaling:
+  # -- Create a [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
   enabled: false
+  # -- Minimum replicas for the HPA
   minReplicas: 1
-  maxReplicas: 100
+  # -- Maximum replicas for the HPA
+  maxReplicas: 10
+  # -- Target CPU utilization for HPA
   targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
+  # -- (int) Target memory utilization for HPA
+  targetMemoryUtilizationPercentage:
 
+# -- Configure a [nodeSelector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)
 nodeSelector: {}
 
+# -- Configure pods to be scheduled on [tainted](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) nodes.
 tolerations: []
 
+# -- Configure [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) rules for pods.
 affinity: {}
 
 #
-# Values for the PostgreSQL subchart from 
+# Values for the PostgreSQL subchart from
 # https://artifacthub.io/packages/helm/bitnami/postgresql
 #
 
 # Global values
 global:
+  # -- Global configuration for PostgreSQL
   postgresql:
+    # -- Configuration from the [Global parameters section](https://artifacthub.io/packages/helm/bitnami/postgresql#global-parameters) of the Bitnami PostgreSQL subchart.
     auth:
+      # -- Name for a custom user to create
       username: opencontext
+      # -- Name of existing secret to use for PostgreSQL credentials. Need an entry for `password` and `postgres-password`.
+      # See [docs](https://docs.bitnami.com/kubernetes/infrastructure/apache-airflow/administration/use-existing-secrets/) for more instructions.
       existingSecret: opencontext-postgresql
+    # -- PostgreSQL CA certificate filename
     caFilename: ca.crt
   nodeSelector: {}
 
 # PostgreSQL subchart
+# -- Configuration for the Bitnami PostgreSQL subchart. [Values](https://artifacthub.io/packages/helm/bitnami/postgresql) for the subchart can be found on
+# [ArtifactHUB.io](https://artifacthub.io/packages/helm/bitnami/postgresql).
 postgresql:
+  # -- if true, use Bitnami PostgreSQL subchart to create a database.
   enabled: true
+  # -- Override the name of the postgresql resources.
   nameOverride: opencontext-postgresql
+  # -- Additional labels added to the postgresql resources.
   commonLabels:
     app.kubernetes.io/part-of: opencontext-server
   primary:
     initdb:
+      # -- Secret with scripts to be run at first boot for the primary database (in case it contains sensitive information)
       scriptsSecret: opencontext-postgresql-initdb
     persistence:
+      # -- Enable primary PostgreSQL data persistence using PVC
       enabled: true
+      # -- PVC Storage Request for primary PostgreSQL volume
       size: 10Gi
   tls:
+    # -- Enable TLS traffic support
     enabled: true
+    # -- Name of an secret that contains the certificates
     certificatesSecret: opencontext-postgresql-certs
+    # -- Certificate filename
     certFilename: tls.crt
+    # -- Certificate key filename
     certKeyFilename: tls.key
   volumePermissions:
+    # -- Enable init container that changes the owner and group of the persistent volume
     enabled: true
   service:
+    # -- PostgreSQL service port
     port: 5432
 
 # Values for OpenContext
 app:
+  # -- Organization name to be displayed in the app.
   orgName:
-  # HTTPS URL
-  url: 
+  # -- URL to access the application. If Ingress is disabled use `kubectl port-forward` to forward the
+  # OpenContext service to port 8080. You will then be able to access it at http://localhost:8080.
+  url: http://localhost:8080
   database:
+    # -- Prefix for the application to use when generating databases in PostgreSQL
     prefix: opencontext_
+    # -- PostgreSQL database connection info
     connection:
+      # -- PostgreSQL database host
       host:
+      # -- PostgreSQL database port
       port:
+      # -- PostgreSQL database user
       user:
+      # -- PostgreSQL database password
       password:
+      # -- PostgreSQL database SSL/TLS configuration
       ssl:
+        # -- Whether the PostgreSQL database has SSL/TLS enabled
         enabled: true
-        # If true, the server certificate is verified against the list of supplied CAs. 
+        # -- If true, the server certificate is verified against the list of supplied CAs.
         # An error event is emitted if verification fails
         rejectUnauthorized: false
+      # -- PostgreSQL database pool configuration
       pool:
+        # -- PostgreSQL database pool minimum size
         min: 0
+        # -- PostgreSQL database pool maximum size
         max: 20
+  # -- GitHub configuration
   github:
-    # token or app
+    # -- GitHub authentication type. Must be one of `token` or `app` for GitHub app.
+    # For more details see our [docs](https://docs.opencontext.com/docs/configuration/github-credentials).
     authType: token
-    token:
+    # -- GitHub token to use if `authType` is set to `token`.
+    token: MY_TOKEN
+    # -- GitHub host
+    # @default -- github.com
     host:
+    # -- GitHub app credentials to use if `authType` is set to `app`.
     appAuth:
+      # -- Name of secret that contains the GitHub app credentials.
       appAuthSecret: opencontext-github-app-auth
+      # -- (path) Path to GitHub app credentials file the chart should use to create the `appAuthSecret`.
+      # **NOTE**: Only works when chart is downloaded and run locally.
       createAppAuthFromFile:
-  pagerDuty:
+  # -- Bitbucket configuration
+  bitbucket:
+    # -- If true, enable Bitbucket integration
     enabled: false
+    # -- Bitbucket authentication type. Must be one of `appPassword` or `token`
+    # For more details see our [docs](https://docs.opencontext.com/docs/configuration/bitbucket-credentials).
+    authType: appPassword
+    # -- Bitbucket token to use if `authType` is set to `token`
     token:
-  googleCloudStorage:
+    # -- Bitbucket host
+    # @default -- bitbucket.org
+    host:
+    # -- Bitbucket app password credentials to use if `authType` is set to `appPassword`
+    appAuth:
+      # -- Bitbucket username
+      username:
+      # -- Bitbucker app password
+      appPassword:
+  # -- PagerDuty configuration
+  pagerDuty:
+    # -- If true, enable PagerDuty integration
     enabled: false
+    # -- PagerDuty API token.
+    # For more details see our [docs](https://docs.opencontext.com/docs/configuration/pagerduty-credentials).
+    token:
+  # -- Google Cloud Storage (GCS) configuration
+  googleCloudStorage:
+    # -- If true, enable Google Cloud Storage (GCS) integration
+    enabled: false
+    # -- If true, application will use `serviceAccountSecret` to authenticate with Google.
+    # This can be set to false if running on Google Cloud infrastructure. i.e. GKE
     useServiceAccount: false
+    # -- Name of secret that contains the service account credentials.
     serviceAccountSecret: opencontext-google-cloud-storage
+      # -- (path) Path to Google Cloud service account key file the chart should use to create the `serviceAccountSecret`.
+      # **NOTE**: Only works when chart is downloaded and run locally.
     createServiceAccountFromFile:
+  # -- Auth configuration
   auth:
-    # Change to true to use Google OAuth for authentication
+    # -- If true, enable Google OAuth for authentication.
+    # For more details see our [docs](https://docs.opencontext.com/docs/getting-started/onprem-install#auth).
     enabled: false
     provider:
       google:
+        # -- Google OAuth client id
         clientId:
-        clientSecret: 
+        # -- Google OAuth client secret
+        clientSecret:
+  # Catalog configuration
   catalog:
+    # -- (int) Seconds between catalog refreshes
     intervalSecs: 200
-    #locations:
-    #  githubOrg:
-    #    - https://github.com/scatter-ly
-    #  githubDiscovery:
-    #    - https://github.com/scatter-ly/scatter.ly/blob/main/*.yaml
-    #    - https://github.com/scatter-ly/sandbox/
-    #  url:
-    #    - https://github.com/scatter-ly/publictest/blob/main/oc-catalog.yaml
-    #  gcsDiscovery:
-    #    # URL Format: https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*
-    #    - https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*
+    # -- Catalog locations. For details see our [docs](https://docs.opencontext.com/docs/getting-started/onprem-install#catalog-locations).
+    locations:
+      # -- List of GitHub organization URLs used to discover people and teams in GitHub.
+      # <br /><br />
+      # URL Format: `https://github.com/${GITHUB_ORG}`
+      # <br/><br/>
+      # For example,
+      # <br/>
+      # `- https://github.com/scatter-ly`
+      githubOrg: []
+      # -- List of GitHub repositories
+      # <br/><br/>
+      # **Discover codepaths and other associated artifacts in a GitHub repo.** <br/><br/>
+      # NOTE: The trailing slash is required! <br/>
+      # URL Format: `https://github.com/${GITHUB_ORG}/${MY_REPO}/`
+      # <br/><br/>
+      # For example, <br/>
+      # `- https://github.com/scatter-ly/publictest/`
+      # <br/><br/>
+      # **Discover OpenContext catalog YAML file in a GitHub repository.** <br/><br/>
+      # URL Format: `https://github.com/${GITHUB_ORG}/${MY_REPO}/blob/${MY_BRANCH}/*.yaml`
+      # <br/><br/>
+      # For example, <br/>
+      # `- https://github.com/scatter-ly/scatter.ly/blob/main/*.yaml`
+      githubDiscovery: []
+      # -- List of URLs
+      # <br/><br/>
+      # **Discover OpenContext catalog YAML file in a GitHub repository** <br/><br/>
+      # For example, <br/>
+      # `- https://github.com/scatter-ly/publictest/blob/main/oc-catalog.yaml`
+      # <br/><br/>
+      # **Discover all OpenContext YAML files in a specific BitBucket repo** <br/><br/>
+      # NOTE: Bitbucket must be enabled. <br/>
+      # URL Format: `https://bitbucket.org/${WORKSPACE_ID}/${MY_REPO}/src/${MY_BRANCH}/*.yaml`
+      # <br/><br/>
+      # For example, <br/>
+      # `- https://bitbucket.org/scatter-ly/scatter.ly/src/main/*.yaml`
+      url: []
+      # -- List of Google Cloud Storage (GCS) URLs
+      # <br/><br/>
+      # **Discover all OpenContext YAML files in a Google Cloud Storage bucket** <br/><br/>
+      # URL Format: `https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*`
+      # <br/><br/>
+      # For example, <br/>
+      # `- https://storage.cloud.google.com/scatterly/yaml/uploads/*`
+      gcsDiscovery: []
+      # -- List of Bitbucket URLs.
+      # <br/><br/>
+      # Workspaces should be referenced using the workspace ID and projects should use the project key.
+      # <br/><br/>
+      # **Discover all repositories in a workspace** <br/><br/>
+      # URL Format: `https://bitbucket.org/workspaces/${WORKSPACE_ID}`
+      # <br/><br/>
+      # For example, <br/>
+      # `- https://bitbucket.org/workspaces/scatterly`
+      # <br/><br/>
+      # **Discover all repositories in a project** <br/><br/>
+      # URL Format: `https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}`
+      # <br/><br/>
+      # For example, <br/>
+      # `- https://bitbucket.org/workspaces/scatterly/projects/CRATES`
+      # <br/><br/>
+      # **Select only a specific repository** <br/><br/>
+      # URL Format: `https://bitbucket.org/workspaces/${WORKSPACE_ID}/${MY_REPO}`
+      # <br/><br/>
+      # For example, <br/>
+      # `- https://bitbucket.org/workspaces/scatterly/crates-frontend`
+      # <br/><br/>
+      # **Search for OpenContext catalog YAML file in all repositories in a project** <br/><br/>
+      # URL Format: `https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml`
+      # <br/><br/>
+      # For example, <br/>
+      # `- https://bitbucket.org/workspaces/scatterly/projects/CRATES/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml`
+      bitbucketDiscovery: []
