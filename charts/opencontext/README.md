@@ -204,13 +204,13 @@ helm install  --namespace opencontext --name-template=<RELEASE_NAME> \
 | global.nodeSelector | object | `{}` |  |
 | global.postgresql | object | `{"auth":{"existingSecret":"opencontext-postgresql","username":"opencontext"},"caFilename":"ca.crt"}` | Global configuration for PostgreSQL |
 | global.postgresql.auth | object | `{"existingSecret":"opencontext-postgresql","username":"opencontext"}` | Configuration from the [Global parameters section](https://artifacthub.io/packages/helm/bitnami/postgresql#global-parameters) of the Bitnami PostgreSQL subchart. |
-| global.postgresql.auth.existingSecret | string | `"opencontext-postgresql"` | Name of existing secret to use for PostgreSQL credentials. Need an entry for `password` and `postgres-password`.  See [docs](https://docs.bitnami.com/kubernetes/infrastructure/apache-airflow/administration/use-existing-secrets/) for more instructions. |
+| global.postgresql.auth.existingSecret | string | `"opencontext-postgresql"` | Name of existing secret to use for PostgreSQL credentials. Need an entry for `password` and `postgres-password`. See [docs](https://docs.bitnami.com/kubernetes/infrastructure/apache-airflow/administration/use-existing-secrets/) for more instructions. |
 | global.postgresql.auth.username | string | `"opencontext"` | Name for a custom user to create |
 | global.postgresql.caFilename | string | `"ca.crt"` | PostgreSQL CA certificate filename |
 | image.pullPolicy | string | `"Always"` | Image pull policy |
 | image.repository | string | `"us-docker.pkg.dev/vpc-host-prod-345521/oc-docker/opencontext"` | OpenContext image |
 | image.tag | string | `"latest"` | Image tag |
-| imagePullSecrets[0] | object | `{"name":"opencontext-artifact-registry"}` | The [imagePullSecrets](https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod)  to reference for the opencontext app |
+| imagePullSecrets[0] | object | `{"name":"opencontext-artifact-registry"}` | The [imagePullSecrets](https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod) to reference for the opencontext app |
 | ingress.annotations | string | `nil` | Set annotations on the Ingress. If `issuer.clusterIssuer` is set then add the annotation `cert-manager.io/cluster-issuer` here. |
 | ingress.className | string | `nil` | Specify the [ingressClassName](https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress) |
 | ingress.enabled | bool | `false` | If true, create and use an Ingress resource. |
@@ -222,7 +222,7 @@ helm install  --namespace opencontext --name-template=<RELEASE_NAME> \
 | nodeSelector | object | `{}` | Configure a [nodeSelector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) |
 | podAnnotations | object | `{}` | Set annotations on pods |
 | podSecurityContext | object | `{"fsGroup":1000,"fsGroupChangePolicy":"OnRootMismatch","runAsGroup":1000,"runAsUser":1000}` | Allows you to overwrite the default [PodSecurityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) |
-| postgresql | object | `{"commonLabels":{"app.kubernetes.io/part-of":"opencontext-server"},"enabled":true,"nameOverride":"opencontext-postgresql","primary":{"initdb":{"scriptsSecret":"opencontext-postgresql-initdb"},"persistence":{"enabled":true,"size":"10Gi"}},"service":{"port":5432},"tls":{"certFilename":"tls.crt","certKeyFilename":"tls.key","certificatesSecret":"opencontext-postgresql-certs","enabled":true},"volumePermissions":{"enabled":true}}` | Configuration for the Bitnami PostgreSQL subchart. [Values](https://artifacthub.io/packages/helm/bitnami/postgresql) for the subchart can be found on  [ArtifactHUB.io](https://artifacthub.io/packages/helm/bitnami/postgresql). |
+| postgresql | object | `{"commonLabels":{"app.kubernetes.io/part-of":"opencontext-server"},"enabled":true,"nameOverride":"opencontext-postgresql","primary":{"initdb":{"scriptsSecret":"opencontext-postgresql-initdb"},"persistence":{"enabled":true,"size":"10Gi"}},"service":{"port":5432},"tls":{"certFilename":"tls.crt","certKeyFilename":"tls.key","certificatesSecret":"opencontext-postgresql-certs","enabled":true},"volumePermissions":{"enabled":true}}` | Configuration for the Bitnami PostgreSQL subchart. [Values](https://artifacthub.io/packages/helm/bitnami/postgresql) for the subchart can be found on [ArtifactHUB.io](https://artifacthub.io/packages/helm/bitnami/postgresql). |
 | postgresql.commonLabels | object | `{"app.kubernetes.io/part-of":"opencontext-server"}` | Additional labels added to the postgresql resources. |
 | postgresql.enabled | bool | `true` | if true, use Bitnami PostgreSQL subchart to create a database. |
 | postgresql.nameOverride | string | `"opencontext-postgresql"` | Override the name of the postgresql resources. |
