@@ -73,6 +73,7 @@ jobs:
       - name: Run helm-docs
         run: |
           helm-docs -t README.md.gotmpl -o README.md
+          echo "GitHub branch is ${GITHUB_REF##*/}"
           if ! git diff --exit-code; then
             git commit -am "ci: Autoupdate chart docs"
             git push
