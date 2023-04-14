@@ -16,7 +16,7 @@ set -x
 # get opencontext app version
 OC_VERSION=$(curl -H "Authorization: token ${TOKEN}" -L -sS https://api.github.com/repos/opencontextinc/opencontext/releases/latest | jq -r .tag_name)
 CHART_APP_VERSION=$(grep appVersion charts/opencontext/Chart.yaml | awk -F': ' '{print $2}')
-if [[ ${OC_VERSION}zz == "zz" ]]; then
+if [[ ${OC_VERSION}zz == "zz" || ${OC_VERSION} == "null" ]]; then
   echo "ERROR: Could not get opencontext version"
   exit 1
 fi
