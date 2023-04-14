@@ -30,6 +30,8 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
       - name: Check and update opencontext appVersion
+        env:
+          TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         run: .github/release-opencontext-version.sh
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.4.0

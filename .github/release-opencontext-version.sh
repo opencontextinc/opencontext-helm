@@ -15,13 +15,13 @@ set -x
 
 # get opencontext app version
 OC_VERSION=$(curl -H "Authorization: token ${TOKEN}" -L -sS https://api.github.com/repos/opencontextinc/opencontext/releases/latest | jq -r .tag_name)
-CHART_APP_VERSION=$(cat charts/opencontext/Chart.yaml | grep appVersion | awk -F': ' '{print $2}')
+CHART_APP_VERSION=$(grep appVersion charts/opencontext/Chart.yaml | awk -F': ' '{print $2}')
 if [[ ${OC_VERSION}zz == "zz" ]]; then
   echo "ERROR: Could not get opencontext version"
   exit 1
 fi
 
-if [[ ${OC_VERSION} != ${CHART_APP_VERSION} ]]; then
+if [[ "${OC_VERSION}" != "${CHART_APP_VERSION}" ]]; then
   echo "INFO: Updating chart appVersion ..."
   # edit opencontext chart appVersion
   ${SED:-sed} -i -E "s/^appVersion: .*/appVersion: $OC_VERSION/" charts/opencontext/Chart.yaml
