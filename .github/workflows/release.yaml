@@ -11,6 +11,11 @@ on:
 
 permissions: read-all
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.ref || github.run_id }}
+  cancel-in-progress: true
+
+
 jobs:
   release:
     permissions:
