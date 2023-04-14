@@ -57,15 +57,15 @@ jobs:
     needs:
       - changed
     steps:
+      - name: Install Helm Docs
+        uses: envoy/install-helm-docs@v1.0.0
+        with:
+          version: 1.11.0
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
           token: '${{ secrets.OC_BOT_GH_WRITE_TOKEN }}'
-      - name: Install Helm Docs
-        uses: envoy/install-helm-docs@v1.0.0
-        with:
-          version: 1.11.0
       - name: Configure Git
         run: |
           git config user.name "OpenContext Bot"
