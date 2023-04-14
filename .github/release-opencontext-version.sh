@@ -21,6 +21,8 @@ if [[ ${OC_VERSION}zz == "zz" || ${OC_VERSION} == "null" ]]; then
   exit 1
 fi
 
+echo "INFO: Branch ${BRANCH}"
+
 if [[ "${OC_VERSION}" != "${CHART_APP_VERSION}" ]]; then
   echo "INFO: Updating chart appVersion ..."
   # edit opencontext chart appVersion
