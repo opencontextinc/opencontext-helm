@@ -1,0 +1,25 @@
+image:
+  repository: "us-docker.pkg.dev/vpc-host-nonprod-345521/np-oc-docker/opencontext"
+  tag: latest
+app:
+  orgName: Scatter.ly Demo Org
+  github:
+    authType: token
+    token: GH_TOKEN
+  bitbucket:
+    enabled: true
+    authType: appPassword
+    appAuth:
+      username: BB_USER
+      appPassword: BB_APP_PASSWORD
+  catalog:
+    locations:
+      githubOrg:
+        - https://github.com/scatter-ly
+      githubDiscovery:
+        - https://github.com/scatter-ly
+      url:
+        - https://bitbucket.org/opencontext/scatter.ly/src/main/*.yaml
+      bitbucketDiscovery:
+        - https://bitbucket.org/workspaces/opencontext/projects/DEMO
+        - https://bitbucket.org/workspaces/oc-test/projects/TESTPRJ
