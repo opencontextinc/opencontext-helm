@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: ORG_NAME
-              value: {{ required ".Values.app.orgNam" .Values.app.orgName | quote }}
+              value: {{ required ".Values.app.orgName" .Values.app.orgName | quote }}
             - name: APP_URL
               value: {{ required ".Values.app.url" .Values.app.url | quote }}
             - name: PGHOST
