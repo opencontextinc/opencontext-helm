@@ -1,6 +1,3 @@
-image:
-  repository: "us-docker.pkg.dev/vpc-host-nonprod-345521/np-oc-docker/opencontext"
-  tag: latest
 app:
   orgName: Scatter.ly Demo Org
   github:
