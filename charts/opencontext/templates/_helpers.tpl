@@ -116,7 +116,7 @@ tls.key: {{ $cert.Key | b64enc }}
 Generate a password for the postgres user used for the connections
 */}}
 {{- define "postgresql.generateUserPassword" -}}
-{{- $pgPassword := .pgPassword | default ( randAlphaNum 12 ) -}}
+{{- $pgPassword := .pgPassword | default ( randAlphaNum 12 | trunc 12 ) -}}
 {{- $_ := set . "pgPassword" $pgPassword -}}
 {{ $pgPassword}}
 {{- end -}}

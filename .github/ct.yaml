@@ -9,5 +9,5 @@ chart-yaml-schema: .github/chart_schema.yaml
 check-version-increment: true
 debug: true
 exclude-deprecated: true
-helm-extra-args: --timeout 300s
+helm-extra-args: --timeout 600s
 validate-maintainers: false

@@ -1,0 +1,36 @@
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned-issuer
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: opencontext-tls
+      hosts:
+        - chart-example.local
+
+issuer:
+  clusterIssuer: selfsigned-issuer
+
+app:
+  orgName: Scatter.ly Demo Org
+  url: https://chart-example.local
+  github:
+    authType: token
+    token: GH_TOKEN
+  auth:
+    enabled: true
+    provider:
+      google:
+        clientId: GOOGLE_CLIENT_ID
+        clientSecret: GOOGLE_CLIENT_SECRET
+  catalog:
+    locations:
+      githubOrg:
+        - https://github.com/scatter-ly
+      githubDiscovery:
+        - https://github.com/scatter-ly/sandbox/
