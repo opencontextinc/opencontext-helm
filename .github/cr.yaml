@@ -1,3 +1,2 @@
 owner: opencontextinc
 charts_repo_url: https://helm.opencontext.com
-package-path: ./
