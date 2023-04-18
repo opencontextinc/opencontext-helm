@@ -45,7 +45,7 @@ entries:
     - https://github.com/opencontextinc/opencontext
     type: application
     urls:
-    - https://helm.opencontext.com/opencontext-0.1.2.tgz
+    - https://github.com/opencontextinc/opencontext-helm/releases/download/opencontext-0.1.2/opencontext-0.1.2.tgz
     version: 0.1.2
   - apiVersion: v2
     appVersion: v0.10.2
@@ -67,7 +67,7 @@ entries:
     - https://github.com/opencontextinc/opencontext
     type: application
     urls:
-    - https://helm.opencontext.com/opencontext-0.1.1.tgz
+    - https://github.com/opencontextinc/opencontext-helm/releases/download/opencontext-0.1.1/opencontext-0.1.1.tgz
     version: 0.1.1
   - apiVersion: v2
     appVersion: v0.10.0
@@ -89,6 +89,6 @@ entries:
     - https://github.com/opencontextinc/opencontext
     type: application
     urls:
-    - https://helm.opencontext.com/opencontext-0.1.0.tgz
+    - https://github.com/opencontextinc/opencontext-helm/releases/download/opencontext-0.1.0/opencontext-0.1.0.tgz
     version: 0.1.0
 generated: "2023-04-18T00:46:58.28551478Z"
