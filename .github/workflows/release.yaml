@@ -41,10 +41,13 @@ jobs:
         run: helm-docs -t README.md.gotmpl -o README.md
       - name: Add repo
         run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add opencontext https://helm.opencontext.com
           helm repo update
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
+        with:
+          config: .github/cr.yaml
         env:
           CR_TOKEN: '${{ secrets.OC_BOT_GH_WRITE_TOKEN }}'
           CR_SKIP_EXISTING: true
