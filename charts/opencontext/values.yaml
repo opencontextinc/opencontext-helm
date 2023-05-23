@@ -304,14 +304,23 @@ app:
       githubOrg: []
       # -- List of GitHub repositories
       # <br/><br/>
-      # **Discover codepaths and other associated artifacts in a GitHub repo.** <br/><br/>
-      # NOTE: The trailing slash is required! <br/>
+      # **Discover repos, codepaths and other associated artifacts in a GitHub repo.** <br/><br/>
+      # NOTE: The trailing slash is required if you are specifying an exact repo name! <br/>
       # URL Format: `https://github.com/${GITHUB_ORG}/${MY_REPO}/`
       # <br/><br/>
       # For example, <br/>
       # `- https://github.com/scatter-ly/publictest/`
       # <br/><br/>
-      # **Discover OpenContext catalog YAML file in a GitHub repository.** <br/><br/>
+      # **Discover repos, codepaths and other associated artifacts in a GitHub repo using glob expression.** <br/><br/>
+      # URL Format: `https://github.com/${GITHUB_ORG}/c*`, `https://github.com/${GITHUB_ORG}/*end*`
+      # <br/><br/>
+      # For example, <br />
+      # Find all repos starting with `c` <br/>
+      # `- https://github.com/scatter-ly/c*` <br/>
+      # Find all repos containing the word `end` <br/>
+      # `- https://github.com/scatter-ly/*end*` <br/>
+      # <br/><br/>
+      # **Discover all OpenContext YAML files in a specific GitHub repository that includes a Location YAML.** <br/><br/>
       # URL Format: `https://github.com/${GITHUB_ORG}/${MY_REPO}/blob/${MY_BRANCH}/*.yaml`
       # <br/><br/>
       # For example, <br/>
@@ -322,6 +331,12 @@ app:
       # **Discover OpenContext catalog YAML file in a GitHub repository** <br/><br/>
       # For example, <br/>
       # `- https://github.com/scatter-ly/publictest/blob/main/oc-catalog.yaml`
+      # <br/><br/>
+      # **Discover all OpenContext YAML files in a specific GitHub repo without a Location YAML** <br/><br/>
+      # URL Format: `https://github.com/${GITHUB_ORG}/${MY_REPO}/blob/${MY_BRANCH}/*.yaml`
+      # <br/><br/>
+      # For example, <br/>
+      # `- https://bitbucket.org/scatter-ly/scatter.ly/src/main/*.yaml`
       # <br/><br/>
       # **Discover all OpenContext YAML files in a specific BitBucket repo** <br/><br/>
       # NOTE: Bitbucket must be enabled. <br/>
