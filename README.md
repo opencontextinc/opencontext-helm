@@ -1,6 +1,6 @@
 # OpenContext Helm Charts
 
-Official Helm charts for OpenCountext. Currently supported:
+Official Helm charts for OpenContext. Currently supported:
 <!-- Keep full URL links to repo files because this README syncs from main to gh-pages.  -->
 - [OpenContext](https://github.com/opencontextinc/opencontext-helm/blob/main/charts/opencontext/README.md) (opencontext/opencontext) 
 
