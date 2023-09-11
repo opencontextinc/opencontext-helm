@@ -2,6 +2,30 @@ apiVersion: v1
 entries:
   opencontext:
   - apiVersion: v2
+    appVersion: v0.15.0
+    created: "2023-09-11T19:44:22.80152646Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.9.13
+    description: A Helm chart for OpenContext
+    digest: 4aee72c9850d5506387c5197895035fcfdb9b5bfeb120a595369f6f5e9c33179
+    home: https://opencontext.com
+    icon: https://docs.opencontext.com/img/logo.svg
+    kubeVersion: '>=1.21.0'
+    maintainers:
+    - email: support@opencontext.com
+      name: OpenContext Inc.
+      url: https://opencontext.com
+    name: opencontext
+    sources:
+    - https://github.com/opencontextinc/opencontext
+    type: application
+    urls:
+    - https://github.com/opencontextinc/opencontext-helm/releases/download/opencontext-0.6.0/opencontext-0.6.0.tgz
+    version: 0.6.0
+  - apiVersion: v2
     appVersion: v0.14.0
     created: "2023-08-18T23:12:44.564984341Z"
     dependencies:
@@ -163,4 +187,4 @@ entries:
     urls:
     - https://github.com/opencontextinc/opencontext-helm/releases/download/opencontext-0.1.0/opencontext-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-18T23:12:44.565055642Z"
+generated: "2023-09-11T19:44:22.80157836Z"
