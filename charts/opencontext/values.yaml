@@ -225,14 +225,17 @@ app:
         max: 20
   # -- GitHub configuration
   github:
+    # -- GitHub host
+    # @default -- github.com
+    host:
+    # -- Import archived repositories?
+    # @default -- false
+    includeArchived: false
     # -- GitHub authentication type. Must be one of `token` or `app` for GitHub app.
     # For more details see our [docs](https://docs.opencontext.com/docs/configuration/github-credentials).
     authType: token
     # -- GitHub token to use if `authType` is set to `token`.
     token: MY_TOKEN
-    # -- GitHub host
-    # @default -- github.com
-    host:
     # -- GitHub app credentials to use if `authType` is set to `app`.
     appAuth:
       # -- Name of secret that contains the GitHub app credentials.
