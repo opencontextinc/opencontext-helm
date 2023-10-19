@@ -691,12 +691,13 @@ helm install  --namespace opencontext --name-template=<RELEASE_NAME> \
 | app.database.connection.ssl.rejectUnauthorized | bool | `false` | If true, the server certificate is verified against the list of supplied CAs. An error event is emitted if verification fails |
 | app.database.connection.user | string | `nil` | PostgreSQL database user |
 | app.database.prefix | string | `"opencontext_"` | Prefix for the application to use when generating databases in PostgreSQL |
-| app.github | object | `{"appAuth":{"appAuthSecret":"opencontext-github-app-auth","createAppAuthFromFile":null},"authType":"token","host":null,"token":"MY_TOKEN"}` | GitHub configuration |
+| app.github | object | `{"appAuth":{"appAuthSecret":"opencontext-github-app-auth","createAppAuthFromFile":null},"authType":"token","host":null,"includeArchived":false,"token":"MY_TOKEN"}` | GitHub configuration |
 | app.github.appAuth | object | `{"appAuthSecret":"opencontext-github-app-auth","createAppAuthFromFile":null}` | GitHub app credentials to use if `authType` is set to `app`. |
 | app.github.appAuth.appAuthSecret | string | `"opencontext-github-app-auth"` | Name of secret that contains the GitHub app credentials. |
 | app.github.appAuth.createAppAuthFromFile | path | `nil` | Path to GitHub app credentials file the chart should use to create the `appAuthSecret`. **NOTE**: Only works when chart is downloaded and run locally. |
 | app.github.authType | string | `"token"` | GitHub authentication type. Must be one of `token` or `app` for GitHub app. For more details see our [docs](https://docs.opencontext.com/docs/configuration/github-credentials). |
 | app.github.host | string | github.com | GitHub host |
+| app.github.includeArchived | bool | false | Import archived repositories? |
 | app.github.token | string | `"MY_TOKEN"` | GitHub token to use if `authType` is set to `token`. |
 | app.googleCloudStorage | object | `{"createServiceAccountFromFile":null,"enabled":false,"serviceAccountSecret":"opencontext-google-cloud-storage","useServiceAccount":false}` | Google Cloud Storage (GCS) configuration |
 | app.googleCloudStorage.createServiceAccountFromFile | path | `nil` | Path to Google Cloud service account key file the chart should use to create the `serviceAccountSecret`. **NOTE**: Only works when chart is downloaded and run locally. |
