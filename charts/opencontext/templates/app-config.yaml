@@ -23,6 +23,7 @@ data:
       # For each github host, choose to auth either via token or github app credentials. Do NOT use both!
       github:
         - host: {{ .Values.app.github.host | default "github.com" }}
+          includeArchived: {{ .Values.app.github.includeArchived | default false }}
           {{- if eq .Values.app.github.authType "token" }}
           token:
             $file: ../secrets/GITHUB_TOKEN
