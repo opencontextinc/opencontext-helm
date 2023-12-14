@@ -41,7 +41,7 @@ jobs:
           TOKEN: '${{ secrets.OC_BOT_GH_WRITE_TOKEN }}'
         run: .github/release-opencontext-version.sh
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.4.0
+        uses: helm/chart-testing-action@v2.6.0
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
@@ -97,7 +97,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.4.0
+        uses: helm/chart-testing-action@v2.6.0
       - name: Copy examples to ci
         run: cp charts/opencontext/examples/*-values.yaml charts/opencontext/ci
       - name: Replace YAML placeholders in ci with secrets
@@ -166,7 +166,7 @@ jobs:
         with:
           node_image: kindest/node:${{ matrix.k8s }}
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.4.0
+        uses: helm/chart-testing-action@v2.6.0
       - name: Replace YAML placeholders in examples with secrets
         env:
           GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
