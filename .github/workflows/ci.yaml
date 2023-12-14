@@ -97,7 +97,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.6.0
+        uses: helm/chart-testing-action@v2.6.1
       - name: Copy examples to ci
         run: cp charts/opencontext/examples/*-values.yaml charts/opencontext/ci
       - name: Replace YAML placeholders in ci with secrets
