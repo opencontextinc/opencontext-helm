@@ -4,7 +4,7 @@
 --->
 # OpenContext Helm Charts
 
-![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.16.0](https://img.shields.io/badge/AppVersion-v0.16.0-informational?style=flat-square)
+![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.17.0](https://img.shields.io/badge/AppVersion-v0.17.0-informational?style=flat-square)
 
 [OpenContext](https://opencontext.com) helps get DevSecOps on the same page by untangling the complex relationships between people, code, and services with shared context.
 
@@ -282,6 +282,20 @@ app:
       createAppAuthFromFile: github-app-auth.yaml
 ```
 
+### GitLab credentials
+
+This integration enables the application to discover repositories and look for OpenContext YAML file definitions in GitLab.
+
+To enable this integration, you'll need an [access token](../configuration/gitlab-credentials). Set `app.gitlab.enabled` to `true` and in your configuration set `app.gitlab.authType` to `token` and then set `app.gitlab.token`.
+
+```yaml
+app:
+  gitlab:
+    enabled: true
+    authType: token
+    token: gl_someverylonggitlabtoken
+```
+
 ### Bitbucket
 
 This integration enables the application to discover repositories and look for OpenContext YAML file definitions in Bitbucket Cloud.
@@ -511,6 +525,17 @@ app:
         # Search for OpenContext catalog YAML file in all repositories in a project
         # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml
         - https://bitbucket.org/workspaces/scatterly/projects/CRATES/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml
+      gitlabOrg:
+        # Discover people and groups in GitLab main group
+        # URL Format: https://gitlab.com/${GROUP}
+        - https://gitlab.com/scatterly-gl
+      gitlabDiscovery:
+        # For all projects of $GROUP, discover OpenContext catalog YAML file (oc-catalog.yaml) on main branch
+        # URL Format: https://gitlab.com/${GROUP}/blob/${BRANCH}/oc-catalog.yaml
+        - https://gitlab.com/scatterly-gl/blob/main/oc-catalog.yaml
+        # For project matching $SUBGROUP_GLOB, discover all YAML files on the prod branch
+        # URL Format: https://gitlab.com/${GROUP}/${SUBGROUP_GLOB}/blob/${BRANCH}/${FILE_GLOB}
+        - https://gitlab.com/scatterly-gl/platform*/blob/prod/*.yaml
 ```
 
 ### Example with all configurations enabled
@@ -522,6 +547,7 @@ The following is an example `opencontext_values.yaml` file for the following con
 - Ingress - nginx
 - SSL certificates - Use cert-manager and letsencrypt-prod to generate an SSL certificate.
 - GitHub credentials -- token
+- GitLab credentials -- token
 - Bitbucket -- appPassword
 - PagerDuty enabled
 - Google Cloud Storage (GCS) enabled and using service account
@@ -557,6 +583,10 @@ app:
   github:
     authType: token
     token: ghp_someverylonggithubtoken
+  gitlab:
+    enabled: true
+    authType: token
+    token: gl_someverylonggitlabtoken
   bitbucket:
     enabled: true
     authType: appPassword
@@ -600,6 +630,13 @@ app:
       gcsDiscovery:
         # Format to look for OpenContext YAML in GCS: https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*
         - https://storage.cloud.google.com/scatterly/yaml/uploads/*
+      gitlabOrg:
+        # Format: https://gitlab.com/${GROUP}
+        - https://gitlab.com/scatterly-gl
+        # For all projects of $GROUP, discover OpenContext catalog YAML file (oc-catalog.yaml) on main branch
+        - https://gitlab.com/scatterly-gl/blob/main/oc-catalog.yaml
+        # For project matching $SUBGROUP_GLOB, discover all YAML files on the prod branch
+        - https://gitlab.com/scatterly-gl/platform*/blob/prod/*.yaml
 ```
 
 3. Install or upgrade the OpenContext Helm chart with the new `opencontext-values.yaml` file:
@@ -673,11 +710,13 @@ helm install  --namespace opencontext --name-template=<RELEASE_NAME> \
 | app.bitbucket.host | string | bitbucket.org | Bitbucket host |
 | app.bitbucket.token | string | `nil` | Bitbucket token to use if `authType` is set to `token` |
 | app.catalog.intervalSecs | int | `200` | Seconds between catalog refreshes |
-| app.catalog.locations | object | `{"bitbucketDiscovery":[],"gcsDiscovery":[],"githubDiscovery":[],"githubOrg":[],"url":[]}` | Catalog locations. For details see our [docs](https://docs.opencontext.com/docs/getting-started/onprem-install#catalog-locations). |
+| app.catalog.locations | object | `{"bitbucketDiscovery":[],"gcsDiscovery":[],"githubDiscovery":[],"githubOrg":[],"gitlabDiscovery":[],"gitlabOrg":[],"url":[]}` | Catalog locations. For details see our [docs](https://docs.opencontext.com/docs/getting-started/onprem-install#catalog-locations). |
 | app.catalog.locations.bitbucketDiscovery | list | `[]` | List of Bitbucket URLs. <br/><br/> Workspaces should be referenced using the workspace ID and projects should use the project key. <br/><br/> **Discover all repositories in a workspace** <br/><br/> URL Format: `https://bitbucket.org/workspaces/${WORKSPACE_ID}` <br/><br/> For example, <br/> `- https://bitbucket.org/workspaces/scatterly` <br/><br/> **Discover all repositories in a project** <br/><br/> URL Format: `https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}` <br/><br/> For example, <br/> `- https://bitbucket.org/workspaces/scatterly/projects/CRATES` <br/><br/> **Select only a specific repository** <br/><br/> URL Format: `https://bitbucket.org/workspaces/${WORKSPACE_ID}/${MY_REPO}` <br/><br/> For example, <br/> `- https://bitbucket.org/workspaces/scatterly/crates-frontend` <br/><br/> **Search for OpenContext catalog YAML file in all repositories in a project** <br/><br/> URL Format: `https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml` <br/><br/> For example, <br/> `- https://bitbucket.org/workspaces/scatterly/projects/CRATES/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml` |
 | app.catalog.locations.gcsDiscovery | list | `[]` | List of Google Cloud Storage (GCS) URLs <br/><br/> **Discover all OpenContext YAML files in a Google Cloud Storage bucket** <br/><br/> URL Format: `https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*` <br/><br/> For example, <br/> `- https://storage.cloud.google.com/scatterly/yaml/uploads/*` |
 | app.catalog.locations.githubDiscovery | list | `[]` | List of GitHub repositories <br/><br/> **Discover repos, codepaths and other associated artifacts in a GitHub repo.** <br/><br/> NOTE: The trailing slash is required if you are specifying an exact repo name! <br/> URL Format: `https://github.com/${GITHUB_ORG}/${MY_REPO}/` <br/><br/> For example, <br/> `- https://github.com/scatter-ly/publictest/` <br/><br/> **Discover repos, codepaths and other associated artifacts in a GitHub repo using glob expression.** <br/><br/> URL Format: `https://github.com/${GITHUB_ORG}/c*`, `https://github.com/${GITHUB_ORG}/*end*` <br/><br/> For example, <br /> Find all repos starting with `c` <br/> `- https://github.com/scatter-ly/c*` <br/> Find all repos containing the word `end` <br/> `- https://github.com/scatter-ly/*end*` <br/> <br/><br/> **Discover all OpenContext YAML files in a specific GitHub repository that includes a Location YAML.** <br/><br/> URL Format: `https://github.com/${GITHUB_ORG}/${MY_REPO}/blob/${MY_BRANCH}/*.yaml` <br/><br/> For example, <br/> `- https://github.com/scatter-ly/scatter.ly/blob/main/*.yaml` |
 | app.catalog.locations.githubOrg | list | `[]` | List of GitHub organization URLs used to discover people and teams in GitHub. <br /><br /> URL Format: `https://github.com/${GITHUB_ORG}` <br/><br/> For example, <br/> `- https://github.com/scatter-ly` |
+| app.catalog.locations.gitlabDiscovery | list | `[]` | List of GitLab projects <br/><br/> **Search for OpenContext catalog YAML file in a specific branch in all projects.** <br/><br/> URL Format: `https://gitlab.com/${GITLAB_GROUP}/blob/${MY_BRANCH}/oc-catalog.yaml` <br/><br/> For example, <br/> `- https://gitlab.com/scatterly-gl/blob/main/oc-catalog.yaml` <br/><br/> **Search for all OpenContext YAML files using a glob expression for the project name and/or file name.** <br/><br/> URL Format: `https://gitlab.com/${GITLAB_GROUP}/${GITLAB_PROJECT}/blob/${MY_BRANCH}/${FILE_GLOB}` <br/><br/> For example, <br /> Search for OpenContext catalog YAML file in all projects starting with `retail` <br/> `- https://gitlab.com/scatterly-gl/retail*/blob/main/oc-catalog.yaml` <br/>  </br> Discover all OpenContext YAML files in all projects starting with `platform`. `- https://gitlab.com/scatterly-gl/platform*/blob/prod/*.yaml` |
+| app.catalog.locations.gitlabOrg | list | `[]` | List of GitLab group URLs used to discover people and groups in GitLab. <br /><br /> URL Format: `https://gitlab.com/${GITLAB_GROUP}` <br/><br/> For example, <br/> `- https://gitlab.com/scatterly-gl` |
 | app.catalog.locations.url | list | `[]` | List of URLs <br/><br/> **Discover OpenContext catalog YAML file in a GitHub repository** <br/><br/> For example, <br/> `- https://github.com/scatter-ly/publictest/blob/main/oc-catalog.yaml` <br/><br/> **Discover all OpenContext YAML files in a specific GitHub repo without a Location YAML** <br/><br/> URL Format: `https://github.com/${GITHUB_ORG}/${MY_REPO}/blob/${MY_BRANCH}/*.yaml` <br/><br/> For example, <br/> `- https://bitbucket.org/scatter-ly/scatter.ly/src/main/*.yaml` <br/><br/> **Discover all OpenContext YAML files in a specific BitBucket repo** <br/><br/> NOTE: Bitbucket must be enabled. <br/> URL Format: `https://bitbucket.org/${WORKSPACE_ID}/${MY_REPO}/src/${MY_BRANCH}/*.yaml` <br/><br/> For example, <br/> `- https://bitbucket.org/scatter-ly/scatter.ly/src/main/*.yaml` |
 | app.database.connection | object | `{"host":null,"password":null,"pool":{"max":20,"min":0},"port":null,"ssl":{"enabled":true,"rejectUnauthorized":false},"user":null}` | PostgreSQL database connection info |
 | app.database.connection.host | string | `nil` | PostgreSQL database host |
@@ -699,6 +738,11 @@ helm install  --namespace opencontext --name-template=<RELEASE_NAME> \
 | app.github.host | string | github.com | GitHub host |
 | app.github.includeArchived | bool | false | Import archived repositories? |
 | app.github.token | string | `"MY_TOKEN"` | GitHub token to use if `authType` is set to `token`. |
+| app.gitlab | object | `{"authType":"token","enabled":false,"host":null,"token":null}` | GitLab configuration |
+| app.gitlab.authType | string | token | GitLab authentication type. Must be `token` For more details see our [docs](https://docs.opencontext.com/docs/configuration/gitlab-credentials). |
+| app.gitlab.enabled | bool | `false` | If true, enable GitLab integration |
+| app.gitlab.host | string | gitlab.com | GitLab host |
+| app.gitlab.token | string | `nil` | GitLab token to use if `authType` is set to `token` |
 | app.googleCloudStorage | object | `{"createServiceAccountFromFile":null,"enabled":false,"serviceAccountSecret":"opencontext-google-cloud-storage","useServiceAccount":false}` | Google Cloud Storage (GCS) configuration |
 | app.googleCloudStorage.createServiceAccountFromFile | path | `nil` | Path to Google Cloud service account key file the chart should use to create the `serviceAccountSecret`. **NOTE**: Only works when chart is downloaded and run locally. |
 | app.googleCloudStorage.enabled | bool | `false` | If true, enable Google Cloud Storage (GCS) integration |
