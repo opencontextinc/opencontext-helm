@@ -225,14 +225,17 @@ app:
         max: 20
   # -- GitHub configuration
   github:
+    # -- GitHub host
+    # @default -- github.com
+    host:
+    # -- Import archived repositories?
+    # @default -- false
+    includeArchived: false
     # -- GitHub authentication type. Must be one of `token` or `app` for GitHub app.
     # For more details see our [docs](https://docs.opencontext.com/docs/configuration/github-credentials).
     authType: token
     # -- GitHub token to use if `authType` is set to `token`.
     token: MY_TOKEN
-    # -- GitHub host
-    # @default -- github.com
-    host:
     # -- GitHub app credentials to use if `authType` is set to `app`.
     appAuth:
       # -- Name of secret that contains the GitHub app credentials.
@@ -240,6 +243,19 @@ app:
       # -- (path) Path to GitHub app credentials file the chart should use to create the `appAuthSecret`.
       # **NOTE**: Only works when chart is downloaded and run locally.
       createAppAuthFromFile:
+  # -- GitLab configuration
+  gitlab:
+    # -- If true, enable GitLab integration
+    enabled: false
+    # -- GitLab host
+    # @default -- gitlab.com
+    host:
+    # -- GitLab authentication type. Must be `token`
+    # @default -- token
+    # For more details see our [docs](https://docs.opencontext.com/docs/configuration/gitlab-credentials).
+    authType: token
+    # -- GitLab token to use if `authType` is set to `token`
+    token:
   # -- Bitbucket configuration
   bitbucket:
     # -- If true, enable Bitbucket integration
@@ -381,3 +397,29 @@ app:
       # For example, <br/>
       # `- https://bitbucket.org/workspaces/scatterly/projects/CRATES/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml`
       bitbucketDiscovery: []
+      # -- List of GitLab group URLs used to discover people and groups in GitLab.
+      # <br /><br />
+      # URL Format: `https://gitlab.com/${GITLAB_GROUP}`
+      # <br/><br/>
+      # For example,
+      # <br/>
+      # `- https://gitlab.com/scatterly-gl`
+      gitlabOrg: []
+      # -- List of GitLab projects
+      # <br/><br/>
+      # **Search for OpenContext catalog YAML file in a specific branch in all projects.** <br/><br/>
+      # URL Format: `https://gitlab.com/${GITLAB_GROUP}/blob/${MY_BRANCH}/oc-catalog.yaml`
+      # <br/><br/>
+      # For example, <br/>
+      # `- https://gitlab.com/scatterly-gl/blob/main/oc-catalog.yaml`
+      # <br/><br/>
+      # **Search for all OpenContext YAML files using a glob expression for the project name and/or file name.** <br/><br/>
+      # URL Format: `https://gitlab.com/${GITLAB_GROUP}/${GITLAB_PROJECT}/blob/${MY_BRANCH}/${FILE_GLOB}`
+      # <br/><br/>
+      # For example, <br />
+      # Search for OpenContext catalog YAML file in all projects starting with `retail` <br/>
+      # `- https://gitlab.com/scatterly-gl/retail*/blob/main/oc-catalog.yaml` <br/>
+      #  </br>
+      # Discover all OpenContext YAML files in all projects starting with `platform`.
+      # `- https://gitlab.com/scatterly-gl/platform*/blob/prod/*.yaml`
+      gitlabDiscovery: []

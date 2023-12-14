@@ -276,6 +276,20 @@ app:
       createAppAuthFromFile: github-app-auth.yaml
 ```
 
+### GitLab credentials
+
+This integration enables the application to discover repositories and look for OpenContext YAML file definitions in GitLab.
+
+To enable this integration, you'll need an [access token](../configuration/gitlab-credentials). Set `app.gitlab.enabled` to `true` and in your configuration set `app.gitlab.authType` to `token` and then set `app.gitlab.token`.
+
+```yaml
+app:
+  gitlab:
+    enabled: true
+    authType: token
+    token: gl_someverylonggitlabtoken
+```
+
 ### Bitbucket
 
 This integration enables the application to discover repositories and look for OpenContext YAML file definitions in Bitbucket Cloud.
@@ -505,6 +519,17 @@ app:
         # Search for OpenContext catalog YAML file in all repositories in a project
         # URL Format: https://bitbucket.org/workspaces/${WORKSPACE_ID}/projects/${PROJECT_KEY}/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml
         - https://bitbucket.org/workspaces/scatterly/projects/CRATES/repos/*?search=true&catalogPath=my/nested/path/catalog.yaml
+      gitlabOrg:
+        # Discover people and groups in GitLab main group
+        # URL Format: https://gitlab.com/${GROUP}
+        - https://gitlab.com/scatterly-gl
+      gitlabDiscovery:
+        # For all projects of $GROUP, discover OpenContext catalog YAML file (oc-catalog.yaml) on main branch
+        # URL Format: https://gitlab.com/${GROUP}/blob/${BRANCH}/oc-catalog.yaml
+        - https://gitlab.com/scatterly-gl/blob/main/oc-catalog.yaml
+        # For project matching $SUBGROUP_GLOB, discover all YAML files on the prod branch
+        # URL Format: https://gitlab.com/${GROUP}/${SUBGROUP_GLOB}/blob/${BRANCH}/${FILE_GLOB}
+        - https://gitlab.com/scatterly-gl/platform*/blob/prod/*.yaml
 ```
 
 ### Example with all configurations enabled
@@ -516,6 +541,7 @@ The following is an example `opencontext_values.yaml` file for the following con
 - Ingress - nginx
 - SSL certificates - Use cert-manager and letsencrypt-prod to generate an SSL certificate.
 - GitHub credentials -- token
+- GitLab credentials -- token
 - Bitbucket -- appPassword
 - PagerDuty enabled
 - Google Cloud Storage (GCS) enabled and using service account
@@ -551,6 +577,10 @@ app:
   github:
     authType: token
     token: ghp_someverylonggithubtoken
+  gitlab:
+    enabled: true
+    authType: token
+    token: gl_someverylonggitlabtoken
   bitbucket:
     enabled: true
     authType: appPassword
@@ -594,6 +624,13 @@ app:
       gcsDiscovery:
         # Format to look for OpenContext YAML in GCS: https://storage.cloud.google.com/${GCS_BUCKET}/${GCS_BUCKET_PATH_TO_YAML}/*
         - https://storage.cloud.google.com/scatterly/yaml/uploads/*
+      gitlabOrg:
+        # Format: https://gitlab.com/${GROUP}
+        - https://gitlab.com/scatterly-gl
+        # For all projects of $GROUP, discover OpenContext catalog YAML file (oc-catalog.yaml) on main branch
+        - https://gitlab.com/scatterly-gl/blob/main/oc-catalog.yaml
+        # For project matching $SUBGROUP_GLOB, discover all YAML files on the prod branch
+        - https://gitlab.com/scatterly-gl/platform*/blob/prod/*.yaml
 ```
 
 3. Install or upgrade the OpenContext Helm chart with the new `opencontext-values.yaml` file:
