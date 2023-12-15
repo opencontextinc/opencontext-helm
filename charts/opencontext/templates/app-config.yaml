@@ -23,6 +23,7 @@ data:
       # For each github host, choose to auth either via token or github app credentials. Do NOT use both!
       github:
         - host: {{ .Values.app.github.host | default "github.com" }}
+          includeArchived: {{ .Values.app.github.includeArchived | default false }}
           {{- if eq .Values.app.github.authType "token" }}
           token:
             $file: ../secrets/GITHUB_TOKEN
@@ -30,6 +31,12 @@ data:
           apps:
             - $include: ../github/github-app-auth.yaml
           {{- end }}
+      {{- if .Values.app.gitlab.enabled }}
+      gitlab:
+        - host: {{ .Values.app.gitlab.host | default "gitlab.com" }}
+          token:
+            $file: ../secrets/GITLAB_TOKEN
+      {{- end }}
       {{- if .Values.app.bitbucket.enabled }}
       bitbucket:
         - host: {{ .Values.app.bitbucket.host | default "bitbucket.org" }}

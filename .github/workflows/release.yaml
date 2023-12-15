@@ -36,7 +36,7 @@ jobs:
       - name: Install Helm Docs
         uses: envoy/install-helm-docs@v1.0.0
         with:
-          version: 1.11.0
+          version: 1.11.3
       - name: Run helm-docs to regenerate chart README
         run: helm-docs -t README.md.gotmpl -o README.md
       - name: Add repo
@@ -45,7 +45,7 @@ jobs:
           helm repo add opencontext https://helm.opencontext.com
           helm repo update
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.5.0
+        uses: helm/chart-releaser-action@v1.6.0
         with:
           config: .github/cr.yaml
         env:

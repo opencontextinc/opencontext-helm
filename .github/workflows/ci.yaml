@@ -41,7 +41,7 @@ jobs:
           TOKEN: '${{ secrets.OC_BOT_GH_WRITE_TOKEN }}'
         run: .github/release-opencontext-version.sh
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.4.0
+        uses: helm/chart-testing-action@v2.6.1
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
@@ -97,7 +97,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.4.0
+        uses: helm/chart-testing-action@v2.6.1
       - name: Copy examples to ci
         run: cp charts/opencontext/examples/*-values.yaml charts/opencontext/ci
       - name: Replace YAML placeholders in ci with secrets
@@ -124,8 +124,8 @@ jobs:
       matrix:
         # When changing versions here, check that the version exists at: https://github.com/yannh/kubernetes-json-schema and https://hub.docker.com/r/kindest/node/tags
         k8s:
-          - v1.26.0   # latest k3s version
-          - v1.24.7   # GKE
+          - v1.28.0   # latest k3s version
+          - v1.25.11   # GKE
           - v1.21.2   # Min version
     steps:
       - name: Checkout
@@ -153,8 +153,8 @@ jobs:
       matrix:
         # When changing versions here, check that the version exists at: https://github.com/yannh/kubernetes-json-schema and https://hub.docker.com/r/kindest/node/tags
         k8s:
-          - v1.26.0   # latest k3s version
-          - v1.24.7   # GKE
+          - v1.28.0   # latest k3s version
+          - v1.25.11   # GKE
           - v1.21.2   # Min version
     steps:
       - name: Checkout
@@ -166,7 +166,7 @@ jobs:
         with:
           node_image: kindest/node:${{ matrix.k8s }}
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.4.0
+        uses: helm/chart-testing-action@v2.6.1
       - name: Replace YAML placeholders in examples with secrets
         env:
           GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
