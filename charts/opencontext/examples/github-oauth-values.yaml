@@ -16,7 +16,7 @@ ingress:
 
 issuer:
   email: it@example.local
-  clusterIssuer: selfsigned-issuer
+  clusterIssuer: letsencrypt-prod
 
 app:
   orgName: Scatter.ly Demo Org
@@ -26,11 +26,11 @@ app:
     token: GH_TOKEN
   auth:
     enabled: true
-    activeProvider: google
+    activeProvider: github
     provider:
-      google:
-        clientId: GOOGLE_CLIENT_ID
-        clientSecret: GOOGLE_CLIENT_SECRET
+      github:
+        clientId: GITHUB_CLIENT_ID
+        clientSecret: GITHUB_CLIENT_SECRET
   catalog:
     locations:
       githubOrg:
