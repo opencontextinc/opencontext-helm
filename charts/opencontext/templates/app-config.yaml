@@ -60,7 +60,7 @@ data:
       ### Set this to a valid provider. google or guest
       {{- if not .Values.app.auth.enabled }}
       activeProvider: guest
-      {{- else }}
+      {{- else if and .Values.app.auth.enabled (eq .Values.app.auth.activeProvider "google") }}
       activeProvider: google
       providers:
         # See https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow for how to get clientId and clientSecret
@@ -70,6 +70,16 @@ data:
               $file: ../secrets/GOOGLE_OAUTH_CLIENT_ID
             clientSecret:
               $file: ../secrets/GOOGLE_OAUTH_CLIENT_SECRET
+      {{- else if and .Values.app.auth.enabled (eq .Values.app.auth.activeProvider "github") }}
+      activeProvider: github-auth-provider
+      providers:
+        # See https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps for how to get cliendId and clientSecret
+        github:
+          onprem:
+            clientId:
+              $file: ../secrets/GITHUB_OAUTH_CLIENT_ID
+            clientSecret:
+              $file: ../secrets/GITHUB_OAUTH_CLIENT_SECRET
       {{- end }}
     {{- if .Values.app.clocks }}
     homepage:
