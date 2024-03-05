@@ -20,4 +20,3 @@ app:
         - https://gitlab.com/scatterly-gl/blob/main/oc-catalog.yaml
         - https://gitlab.com/scatter-ly/scatter*/blob/main/*.yaml
         - https://gitlab.com/scatterly-gl/platform*/blob/main/oc-platformcomponents.yaml
-
