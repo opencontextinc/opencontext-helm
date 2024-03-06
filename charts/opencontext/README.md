@@ -4,7 +4,7 @@
 --->
 # OpenContext Helm Charts
 
-![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.17.0](https://img.shields.io/badge/AppVersion-v0.17.0-informational?style=flat-square)
+![Version: 0.9.0](https://img.shields.io/badge/Version-0.9.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.18.0](https://img.shields.io/badge/AppVersion-v0.18.0-informational?style=flat-square)
 
 [OpenContext](https://opencontext.com) helps get DevSecOps on the same page by untangling the complex relationships between people, code, and services with shared context.
 
@@ -389,7 +389,7 @@ app:
 
 This is not enabled by default. In order to use auth in OpenContext, you must configure the application with [SSL](#ssl-certificates) and create a [User YAML](https://docs.opencontext.com/docs/catalog/catalog-yaml-format/user) for all the users that need to log in to the system.
 
-#### Configure app
+#### Configure Google OAuth
 
 Follow the instructions from [Google](https://support.google.com/cloud/answer/6158849?hl=en) on how to set up OAuth 2.0 and note the following:
 
@@ -399,7 +399,7 @@ Follow the instructions from [Google](https://support.google.com/cloud/answer/61
   - Authorized redirect URIs -- Add `${URL}/api/auth/google/handler/frame`. For example, `https://opencontext.example.com/api/auth/google/handler/frame`.
   - Remember to save your changes and note the client id and client secret!
 
-To enable this integration set `app.auth.enabled` to `true` and also set `app.auth.provider.google.clientId`, `app.auth.provider.google.clientSecret`, `app.url`, `ingress`, and `issuer` in the chart's values.
+To enable this integration set `app.auth.enabled` to `true`, `app.auth.activeProvider` to `google` and also set `app.auth.provider.google.clientId`, `app.auth.provider.google.clientSecret`, `app.url`, `ingress`, and `issuer` in the chart's values.
 
 For example:
 
@@ -423,8 +423,49 @@ app:
   url: https://opencontext.example.com
   auth:
     enabled: true
+    activeProvider: google
     provider:
       google:
+        clientId: some-client-id.apps.googleusercontent.com
+        clientSecret: some-client-secret
+```
+
+#### Configure GitHub OAuth
+
+Follow the instructions from [GitHub](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app) on how to set up an OAuth app and note the following:
+
+- OAuth client id configuration
+  - Add Authorization callback URL -- Add `${URL}/api/auth/github/handler/frame`. For example, `https://opencontext.example.com/api/auth/github/handler/frame`.
+  - Note the client id and client secret.
+  - Remember to save your changes!
+
+To enable this integration set `app.auth.enabled` to `true`, `app.auth.activeProvider` to `github` and also set `app.auth.provider.github.clientId`, `app.auth.provider.github.clientSecret`, `app.url`, `ingress`, and `issuer` in the chart's values.
+
+For example:
+
+```yaml
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: opencontext.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: opencontext-tls
+      hosts:
+        - opencontext.example.com
+
+app:
+  url: https://opencontext.example.com
+  auth:
+    enabled: true
+    activeProvider: github
+    provider:
+      github:
         clientId: some-client-id.apps.googleusercontent.com
         clientSecret: some-client-secret
 ```
@@ -602,6 +643,7 @@ app:
     createServiceAccountFromFile: sa-account-for-gcs.json
   auth:
     enabled: true
+    activeProvider: google
     provider:
       google:
         clientId: some-client-id.apps.googleusercontent.com
@@ -697,8 +739,13 @@ helm install  --namespace opencontext --name-template=<RELEASE_NAME> \
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Configure [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) rules for pods. |
-| app.auth | object | `{"enabled":false,"provider":{"google":{"clientId":null,"clientSecret":null}}}` | Auth configuration |
+| app.auth | object | `{"activeProvider":"google","enabled":false,"provider":{"github":{"clientId":null,"clientSecret":null},"google":{"clientId":null,"clientSecret":null}}}` | Auth configuration |
+| app.auth.activeProvider | string | `"google"` | Provider to use. One of `google` or `github`. The setting `auth.enabled` must be also set to `true`. |
 | app.auth.enabled | bool | `false` | If true, enable Google OAuth for authentication. For more details see our [docs](https://docs.opencontext.com/docs/getting-started/onprem-install#auth). |
+| app.auth.provider.github | object | `{"clientId":null,"clientSecret":null}` | GitHub auth credentials to use if `activeProvider` is set to `github` |
+| app.auth.provider.github.clientId | string | `nil` | GitHub OAuth client id |
+| app.auth.provider.github.clientSecret | string | `nil` | GitHub OAuth client secret |
+| app.auth.provider.google | object | `{"clientId":null,"clientSecret":null}` | Google auth credentials to use if `activeProvider` is set to `google` |
 | app.auth.provider.google.clientId | string | `nil` | Google OAuth client id |
 | app.auth.provider.google.clientSecret | string | `nil` | Google OAuth client secret |
 | app.bitbucket | object | `{"appAuth":{"appPassword":null,"username":null},"authType":"appPassword","enabled":false,"host":null,"token":null}` | Bitbucket configuration |

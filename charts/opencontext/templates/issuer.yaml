@@ -23,7 +23,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: nginx
+          class: {{ required "expected .Values.ingress.className to not be empty" .Values.ingress.className }}
 {{- end }}
 {{- end -}}
 {{- else if (and (.Capabilities.APIVersions.Has "cert-manager.io/v1beta1") .Values.issuer.email ) -}}
@@ -51,7 +51,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: nginx
+          class: {{ required "expected .Values.ingress.className to not be empty" .Values.ingress.className }}
 {{- end }}
 {{- end -}}
 {{- end -}}
