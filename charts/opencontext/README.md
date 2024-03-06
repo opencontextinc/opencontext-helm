@@ -740,7 +740,7 @@ helm install  --namespace opencontext --name-template=<RELEASE_NAME> \
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Configure [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) rules for pods. |
 | app.auth | object | `{"activeProvider":"google","enabled":false,"provider":{"github":{"clientId":null,"clientSecret":null},"google":{"clientId":null,"clientSecret":null}}}` | Auth configuration |
-| app.auth.activeProvider | string | `"google"` | Provider to use. One of `google` or `github`. The setting auth.enabled must be set to `true`. |
+| app.auth.activeProvider | string | `"google"` | Provider to use. One of `google` or `github`. The setting `auth.enabled` must be also set to `true`. |
 | app.auth.enabled | bool | `false` | If true, enable Google OAuth for authentication. For more details see our [docs](https://docs.opencontext.com/docs/getting-started/onprem-install#auth). |
 | app.auth.provider.github | object | `{"clientId":null,"clientSecret":null}` | GitHub auth credentials to use if `activeProvider` is set to `github` |
 | app.auth.provider.github.clientId | string | `nil` | GitHub OAuth client id |
