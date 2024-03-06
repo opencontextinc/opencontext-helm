@@ -170,14 +170,18 @@ jobs:
       - name: Replace YAML placeholders in examples with secrets
         env:
           GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GITLAB_TOKEN: '${{ secrets.GITLAB_TOKEN }}'
           BB_USER: '${{ secrets.BB_USER }}'
           BB_APP_PASSWORD: '${{ secrets.BB_APP_PASSWORD }}'
           PAGERDUTY_TOKEN: '${{ secrets.PAGERDUTY_TOKEN }}'
           GOOGLE_CLIENT_ID: '${{ secrets.DEV_GOOGLE_CLIENT_ID }}'
           GOOGLE_CLIENT_SECRET: '${{ secrets.DEV_GOOGLE_CLIENT_SECRET }}'
+          GITHUB_CLIENT_ID: '${{ secrets.DEV_GITHUB_CLIENT_ID }}'
+          GITHUB_CLIENT_SECRET: '${{ secrets.DEV_GITHUB_CLIENT_SECRET }}'
         run: |
           sed -i -e "s/GH_TOKEN/$GH_TOKEN/g" -e "s/BB_USER/$BB_USER/g" -e "s/BB_APP_PASSWORD/$BB_APP_PASSWORD/g" \
           -e "s/PAGERDUTY_TOKEN/$PAGERDUTY_TOKEN/g" -e "s/GOOGLE_CLIENT_ID/$GOOGLE_CLIENT_ID/g" -e "s/GOOGLE_CLIENT_SECRET/$GOOGLE_CLIENT_SECRET/g" \
+          -e "s/GITLAB_TOKEN/$GITLAB_TOKEN/g" -e "s/GITHUB_CLIENT_ID/$GITHUB_CLIENT_ID/g" -e "s/GITHUB_CLIENT_SECRET/$GITHUB_CLIENT_SECRET/g" \ 
           charts/opencontext/examples/*-values.yaml
       - name: Create Google SA file and imagePullSecret
         env:
